@@ -1,0 +1,78 @@
+args:
+  seed: 0
+  epochs: 20
+  workers: 8
+  batchsize: 64
+  backbone: "ViT-B/16"
+  decay_steps: 2e5
+  lr: 1e-3
+  test: False
+  return_intermediate_text_features: 0
+  numFrames:
+  temporal:
+  prefix: 4
+  postfix: 4
+  tfm_layers: 1
+  tfm_heads: 8
+  start_iter: 0
+  numContrast: 400
+  val_epoch: 0
+
+dataset_args:
+  dataset: "uthar"
+  dataset_path: "/home/dinghao/Dataset/UT_HAR"
+  # /home/dinghao/Dataset/UT_HAR
+  # /home/dingding/WiFiProject/WiFi-CSI-Sensing-Benchmark/Data/UT_HAR
+  type: "uthar"
+  raw_structure: False
+  select_env: ["E04"]
+  backup:
+  fake: False
+  unknown: False
+  num_all_classes: 7
+  unseen_num: 3
+  seen_num: 4
+  unknown_class: False
+  select_unseen:
+  all_classes: ['Lie down', 'Fall', 'Walk', 'Pick up', 'Run', 'Sit down', 'Stand up']
+  loo_split:
+  random_split:
+  pre_saved:
+  gpt_aug: False
+  original_text: False
+
+baseline_args:
+  baseline: 0
+  ablation:
+  noise_std: 0.5
+  mcm_percent: 0.80
+  loss:
+  model_path:
+  zsl_model_path:
+# loss: "simclr"
+# all baselines
+# 0 : original
+# supervised: sup
+# open-set: knn, mcm, vim
+# zsl: coop
+# ablation study: bert, meta
+
+open_set_args:
+  manual: False
+  knn_val: 400
+  knn_threshold: 0.4
+  cluster: True
+  knn_percent: 0.08
+  cluster_percent: 0.80
+  text: False
+
+#model_args:
+
+coop:
+  N_CTX: 16
+  CTX_INIT: ""
+  CSC: False
+  CLASS_TOKEN_POSITION: "end"
+
+
+

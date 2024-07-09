@@ -1,0 +1,87 @@
+args:
+  seed: 0
+  epochs: 20
+  workers: 8
+  batchsize: 64
+  backbone: "ViT-B/16"
+  decay_steps: 2e5
+  lr: 1e-3
+  test: False
+  return_intermediate_text_features: 0
+  numFrames:
+  temporal:
+  prefix: 4
+  postfix: 4
+  tfm_layers: 1
+  tfm_heads: 8
+  start_iter: 0
+  numContrast: 400
+  val_epoch: 0
+
+dataset_args:
+  dataset: "USC"
+  dataset_path: "/home/dingding/Datasets/USC-HAD/"
+  # /home/dinghao/Dataset/USC-HAD
+  # /home/dingding/Datasets/USC-HAD/
+  type: "imu"
+  backup:
+# "/home/dingding/PycharmProjects/Efficient-Prompt/logs_USC/logdir_20240409-111317"
+# '/home/dingding/PycharmProjects/Efficient-Prompt/logs_USC/logdir_20240408-182148/'
+# "/home/dingding/PycharmProjects/Efficient-Prompt/logs_USC/logdir_20240406-104951"
+  fake: False
+  unknown: False
+  num_all_classes: 12
+  unseen_num: 3
+  seen_num: 9
+  unknown_class: False
+  select_unseen:
+# ['Standing', 'Walking Left', 'Walking Downstairs']
+#    best: ['Walking Forward', 'Elevator Down', 'Jumping Up']
+  # ['Walking Downstairs', 'Walking Upstairs', 'Walking Left']
+  all_classes: ["Walking Forward", "Walking Left", "Walking Right", "Walking Upstairs", "Walking Downstairs",
+     "Running Forward", "Jumping Up", "Sitting", "Standing", "Sleeping", "Elevator Up", "Elevator Down"]
+  loo_split: True
+  random_split:
+  pre_saved:
+  # for gpt-aug baseline
+  gpt_aug: False
+  original_text: False
+# ['Walking Right', 'Elevator Up', 'Running Forward']
+# ['Jumping Up', 'Walking Downstairs', 'Sitting', 'Walking Right', 'Elevator Up', 'Walking Left',
+        #          'Running Forward', 'Sleeping', 'Elevator Down']
+  # ['Walking Forward', 'Standing', 'Walking Upstairs']
+baseline_args:
+  baseline: 0
+  ablation:
+  # "xprompt" "xopenset" "xaugmentation"
+  # "nol"
+  noise_std: 0.5
+  mcm_percent: 0.80
+  loss:
+  model_path:
+  zsl_model_path:
+# zsl_model_path: "/home/dingding/PycharmProjects/Efficient-Prompt/logs_USC/logdir_b_vim_20240329-141752/model_best_epoch19.pth.tar"
+# loss: "simclr"
+# all baselines
+# 0 : original
+# supervised: sup
+# open-set: knn, mcm, vim
+# zsl: coop
+# ablation study: bert, meta, nol
+
+open_set_args:
+  manual: False
+  knn_val: 400
+  knn_threshold: 0.4
+  cluster: True
+  knn_percent: 0.08
+  cluster_percent: 0.80
+  text: False
+
+coop:
+  N_CTX: 16
+  CTX_INIT: ""
+  CSC: False
+  CLASS_TOKEN_POSITION: "end"
+
+

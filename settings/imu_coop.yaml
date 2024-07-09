@@ -1,0 +1,48 @@
+args:
+  seed: 0
+  epochs: 20
+  workers: 8
+  batchsize: 64
+  backbone: "ViT-B/16"
+  decay_steps: 2e5
+  lr: 1e-3
+  test: False
+  return_intermediate_text_features: 0
+  numFrames:
+  temporal:
+  prefix: 4
+  postfix: 4
+  tfm_layers: 1
+  tfm_heads: 8
+  start_iter: 0
+  numContrast: 400
+  val_epoch: 0
+
+dataset_args:
+  dataset: "USC"
+  dataset_path: "/home/dingding/Datasets/USC-HAD/"
+  type: "imu"
+  backup:
+  num_all_classes: 12
+
+baseline_args:
+  baseline: 98
+  noise_std: 0.5
+  mcm_percent: 0.90
+
+open_set_args:
+  manual: True
+  knn_val: 400
+  knn_threshold: 0.4
+  cluster: False
+  knn_percent:
+  cluster_percent: 0.88
+
+coop:
+  N_CTX: 16
+  CTX_INIT: ""
+  CSC: False
+
+
+
+
