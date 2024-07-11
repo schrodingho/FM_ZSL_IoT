@@ -31,29 +31,13 @@ def PAMAP_dict():
 
 def PAMAP(dataset_dir='./PAMAP2_Dataset/Protocol', WINDOW_SIZE=171, OVERLAP_RATE=0.5, SPLIT_RATE=(8, 2),
           VALIDATION_SUBJECTS={105}, Z_SCORE=True, SAVE_PATH=os.path.abspath('../../HAR-datasets')):
-    '''
-        dataset_dir: 源数据目录 : str
-        WINDOW_SIZE: 滑窗大小 : int
-        OVERLAP_RATE: 滑窗重叠率 : float in [0，1）
-        SPLIT_RATE: 平均法分割验证集，表示训练集与验证集比例。优先级低于"VALIDATION_SUBJECTS": tuple
-        VALIDATION_SUBJECTS: 留一法分割验证集，表示验证集所选取的Subjects : set
-        Z_SCORE: 标准化 : bool
-        SAVE_PATH: 预处理后npy数据保存目录 : str
-    '''
 
-    print(
-        "\n原数据分析：共12个活动，文件包含9个受试者收集的数据，切分数据集思路可以采取留一法，选取n个受试者数据作为验证集。\n")
-    print('预处理思路：提取有效列，重置活动label，数据降采样1/3，即100Hz -> 33.3Hz，进行滑窗，缺值填充，标准化等方法\n')
-
-    #  保证验证选取的subjects无误
     if VALIDATION_SUBJECTS:
-        print('\n---------- 采用【留一法】分割验证集，选取的subject为:%s ----------\n' % (VALIDATION_SUBJECTS))
         for each in VALIDATION_SUBJECTS:
             assert each in set([*range(101, 110)])
     else:
-        print('\n---------- 采用【平均法】分割验证集，训练集与验证集样本数比为:%s ----------\n' % (str(SPLIT_RATE)))
+        print((str(SPLIT_RATE)))
 
-    # 下载数据集
     # download_dataset(
     #     dataset_name='PAMAP2',
     #     file_url='http://archive.ics.uci.edu/static/public/231/pamap2+physical+activity+monitoring.zip',
@@ -79,14 +63,14 @@ def PAMAP(dataset_dir='./PAMAP2_Dataset/Protocol', WINDOW_SIZE=171, OVERLAP_RATE
         print('   ----   Validation Data' if subject_id in VALIDATION_SUBJECTS else '')
 
         content = pd.read_csv(file, sep=' ', usecols=[1] + [*range(4, 16)] + [*range(21, 33)] + [
-            *range(38, 50)])  # 取出有效数据列, 第2列为label，5-16，22-33，39-50都是可使用的传感数据
-        content = content.interpolate(method='linear', limit_direction='forward', axis=0).to_numpy()  # 线性插值填充nan
+            *range(38, 50)])
+        content = content.interpolate(method='linear', limit_direction='forward', axis=0).to_numpy()
 
-        # 降采样 1/3， 100Hz -> 33.3Hz
-        data = content[::3, 1:]  # 数据 （n, 36)
-        label = content[::3, 0]  # 标签
+        # down sampling 1/3， 100Hz -> 33.3Hz
+        data = content[::3, 1:]
+        label = content[::3, 0]
 
-        data = data[label != 0]  # 去除0类
+        data = data[label != 0]
         label = label[label != 0]
 
         for label_id in range(12):
@@ -94,18 +78,16 @@ def PAMAP(dataset_dir='./PAMAP2_Dataset/Protocol', WINDOW_SIZE=171, OVERLAP_RATE
             cur_data = sliding_window(array=data[label == true_label], windowsize=WINDOW_SIZE, overlaprate=OVERLAP_RATE)
 
             # TODO: save data
-            # 两种分割验证集的方法 [留一法 or 平均法]
-            if VALIDATION_SUBJECTS:  # 留一法
-                # 区分训练集 & 验证集
-                if subject_id not in VALIDATION_SUBJECTS:  # 训练集
+            if VALIDATION_SUBJECTS:
+                if subject_id not in VALIDATION_SUBJECTS:  # train set
                     xtrain += cur_data
                     ytrain += [label_id] * len(cur_data)
-                else:  # 验证集
+                else:  # vad set
                     xtest += cur_data
                     ytest += [label_id] * len(cur_data)
-            else:  # 平均法
-                trainlen = int(len(cur_data) * SPLIT_RATE[0] / sum(SPLIT_RATE))  # 训练集长度
-                testlen = len(cur_data) - trainlen  # 验证集长度
+            else:
+                trainlen = int(len(cur_data) * SPLIT_RATE[0] / sum(SPLIT_RATE))
+                testlen = len(cur_data) - trainlen
                 xtrain += cur_data[:trainlen]
                 xtest += cur_data[trainlen:]
                 ytrain += [label_id] * trainlen
@@ -118,7 +100,7 @@ def PAMAP(dataset_dir='./PAMAP2_Dataset/Protocol', WINDOW_SIZE=171, OVERLAP_RATE
     ytrain = np.array(ytrain, np.int64)
     ytest = np.array(ytest, np.int64)
 
-    if Z_SCORE:  # 标准化
+    if Z_SCORE:
         xtrain, xtest = z_score_standard(xtrain=xtrain, xtest=xtest)
 
     print(
@@ -126,7 +108,7 @@ def PAMAP(dataset_dir='./PAMAP2_Dataset/Protocol', WINDOW_SIZE=171, OVERLAP_RATE
     print('xtrain shape: %s\nxtest shape: %s\nytrain shape: %s\nytest shape: %s' % (
     xtrain.shape, xtest.shape, ytrain.shape, ytest.shape))
 
-    if SAVE_PATH:  # 数组数据保存目录
+    if SAVE_PATH:
         save_npy_data(
             dataset_name='PAMAP2',
             root_dir=SAVE_PATH,
@@ -143,22 +125,17 @@ def PAMAP(dataset_dir='./PAMAP2_Dataset/Protocol', WINDOW_SIZE=171, OVERLAP_RATE
 def gen_PAMAP_data(dataset_dir='./PAMAP2_Dataset/Protocol', WINDOW_SIZE=171, OVERLAP_RATE=0.5, SPLIT_RATE=(8, 2),
           VALIDATION_SUBJECTS={105}, Z_SCORE=True):
 
-    print(
-        "\n原数据分析：共12个活动，文件包含9个受试者收集的数据，切分数据集思路可以采取留一法，选取n个受试者数据作为验证集。\n")
-    print('预处理思路：提取有效列，重置活动label，数据降采样1/3，即100Hz -> 33.3Hz，进行滑窗，缺值填充，标准化等方法\n')
 
     if VALIDATION_SUBJECTS:
-        print('\n---------- 采用【留一法】分割验证集，选取的subject为:%s ----------\n' % (VALIDATION_SUBJECTS))
         for each in VALIDATION_SUBJECTS:
             assert each in set([*range(101, 110)])
     else:
-        print('\n---------- 采用【平均法】分割验证集，训练集与验证集样本数比为:%s ----------\n' % (str(SPLIT_RATE)))
+        print(str(SPLIT_RATE))
 
 
-    xtrain, xtest, ytrain, ytest = [], [], [], []  # train-test-data, 用于存放最终数据
+    xtrain, xtest, ytrain, ytest = [], [], [], []
     all_data, all_label = [], []
-    category_dict = dict(zip([*range(12)], [1, 2, 3, 4, 5, 6, 7, 12, 13, 16, 17, 24]))  # 12分类所对应的实际label，对应readme.pdf
-    # category_dict = dict(zip([*range(18)], [1, 2, 3, 4, 5, 6, 7, 9, 10, 11, 12 ,13, 16, 17, 18, 19, 20, 24]))  # 12分类所对应的实际label，对应readme.pdf
+    category_dict = dict(zip([*range(12)], [1, 2, 3, 4, 5, 6, 7, 12, 13, 16, 17, 24]))
 
     dir = dataset_dir
     filelist = os.listdir(dir)
@@ -170,13 +147,12 @@ def gen_PAMAP_data(dataset_dir='./PAMAP2_Dataset/Protocol', WINDOW_SIZE=171, OVE
         print('   ----   Validation Data' if subject_id in VALIDATION_SUBJECTS else '')
 
         content = pd.read_csv(file, sep=' ', usecols=[1] + [*range(4, 16)] + [*range(21, 33)] + [
-            *range(38, 50)])  # 取出有效数据列, 第2列为label，5-16，22-33，39-50都是可使用的传感数据
-        content = content.interpolate(method='linear', limit_direction='forward', axis=0).to_numpy()  # 线性插值填充nan
+            *range(38, 50)])
+        content = content.interpolate(method='linear', limit_direction='forward', axis=0).to_numpy()
+        data = content[::3, 1:]
+        label = content[::3, 0]
 
-        data = content[::3, 1:]  # 数据) （n, 36)
-        label = content[::3, 0]  # 标签
-
-        data = data[label != 0]  # 去除0类
+        data = data[label != 0]
         label = label[label != 0]
 
         for label_id in range(12):
@@ -190,7 +166,7 @@ def gen_PAMAP_data(dataset_dir='./PAMAP2_Dataset/Protocol', WINDOW_SIZE=171, OVE
     all_label = np.array(all_label, np.int64)
 
 
-    if Z_SCORE:  # 标准化
+    if Z_SCORE:
         all_data = z_score_standard_single(all_data)
 
     print(
@@ -205,13 +181,12 @@ def gen_PAMAP_data(dataset_dir='./PAMAP2_Dataset/Protocol', WINDOW_SIZE=171, OVE
 loc = [1] + [*range(4, 16)] + [*range(21, 33)] + [*range(38, 50)]
 
 def window(data, label, size, stride):
-    '''将数组data和label按照滑窗尺寸size和stride进行切割'''
     x, y = [], []
     for i in range(0, len(label), stride):
-        if i+size < len(label): #不足一个滑窗大小的数据丢弃
+        if i+size < len(label):
 
             l = set(label[i:i+size])
-            if len(l) > 1 or label[i] == 0: #当一个滑窗中含有包含多种activity或者activity_id为0（即属于其他动作），丢弃
+            if len(l) > 1 or label[i] == 0:
                 continue
             elif len(l) == 1:
                 x.append(data[i: i + size, :])
@@ -221,19 +196,16 @@ def window(data, label, size, stride):
 
 def gen_PAMAP_data2(dataset_dir, window_size, step):
     X, Y = [], []
-    # 遍历9个subject文件
     for i in range(1, 10):
         total = pd.read_csv(f'{dataset_dir}/subject10' + str(i) + '.dat', header=None, sep=' ', usecols=loc).values
-        total = total[~np.isnan(total).any(axis=1), :]  # 去除NaN
+        total = total[~np.isnan(total).any(axis=1), :]
         data = total[:, 1:]
         label = total[:, 0].reshape(-1)
 
-        # 调用window函数进行滑窗处理
         x, y = window(data, label, window_size, step)
         X += x
         Y += y
 
-    # 将索引从0开始依次编号
     cate_idx = list(Counter(Y).keys())
     cate_idx.sort()
     for i in range(len(Y)):
