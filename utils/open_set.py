@@ -42,7 +42,6 @@ def knn_parameter_define(config, trn_vFeatures, trn_targets, val_vFeatures, val_
     define each cluster's threshold and k value
     """
     trn_unique_targets = torch.unique(trn_targets)
-    val_unique_targets = torch.unique(val_targets)
 
     targets_thres_tensor = torch.zeros(len(trn_unique_targets))
     targets_thres_tensor = targets_thres_tensor.to(torch.float32)
@@ -150,27 +149,3 @@ def os_detect_4(trn_vFeatures, val_vFeatures, trn_targets, val_targets, auto_knn
     select_unseen_idx = ~select_seen_idx
 
     return select_seen_idx, select_unseen_idx
-
-def os_detect_4_text(seen_tFeatures, val_vFeatures, auto_knn_params):
-    target_thres_tensor = auto_knn_params["v"]
-    select_seen_idx = torch.zeros(len(val_vFeatures)).bool()
-    select_seen_idx = select_seen_idx.to(seen_tFeatures.device)
-
-    for target in range(len(seen_tFeatures)):
-        select_tFeature = seen_tFeatures[target]
-        target_thres = target_thres_tensor[target]
-        # dist_val_tFeat = torch.cdist(val_vFeatures.unsqueeze(0), select_tFeature.unsqueeze(0), p=2)
-        # dist_val_tFeat = dist_val_tFeat.squeeze(0)
-        dist_val_tFeat = torch.norm(val_vFeatures - select_tFeature, dim=1)
-        select_seen_idx = select_seen_idx | (dist_val_tFeat < target_thres)
-
-    select_unseen_idx = ~select_seen_idx
-    return select_seen_idx, select_unseen_idx
-
-def os_detect_2(pos_tFeature, neg_tFeature, val_vFeatures):
-    # 2. depends on the text embedding
-    return
-
-def os_detect_3(pos_tFeature, neg_tFeature, val_vFeatures):
-    # 3. depends on the probability of product between text embedding and image embedding
-    return

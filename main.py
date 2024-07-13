@@ -20,7 +20,7 @@ import os
 import ruamel.yaml as yaml
 
 import data_utils.datasets_entry
-import new_train_val_entry
+import train
 import pandas as pd
 from data_utils.extract_raw_data import extract_raw_func, read_text_file
 
@@ -46,7 +46,6 @@ def main(args):
     if not os.path.exists(current_log):
         os.makedirs(current_log)
     # TODO: figure out the usage of this parameter
-    args.model_path = current_log
     config["model_path"] = current_log
 
     # meta_data generation
@@ -231,9 +230,9 @@ def main(args):
     # initialize models
     print('==> reading meta data for {}'.format(config["dataset_args"]["dataset"]))
 
-    all_actionlist, all_actiondict, all_actiontoken = text_prompt(all_meta_list, dataset=dataset_name,
+    all_actionlist, all_actiondict, all_actiontoken = text_prompt(all_meta_list,
                                                                    clipbackbone=config["args"]["backbone"],
-                                                                   device=device, type='seen')
+                                                                   device=device)
 
     text_single = [all_actionlist, all_actiondict, all_actiontoken]
 
@@ -287,7 +286,7 @@ def main(args):
     input_loader = [trnloader, val_tune_loader, val_mix_loader]
     if config["dataset_args"]["fake"] == True:
         input_loader = [fakeloader, trnloader, val_tune_loader, val_mix_loader]
-    open_acc = new_train_val_entry.train_CLIPrompt(config, input_loader, text_single,
+    open_acc = train.train_entry(config, input_loader, text_single,
                                                    model, optimizer, lr_scheduler, device)
 
 
@@ -297,16 +296,10 @@ def main(args):
 if __name__ == "__main__":
     parser = ArgumentParser()
     parser.add_argument('--config_choose', type=str, default='USC',
-                        choices=['USC', 'wifi', 'mmwave', 'pamap', "widar", "lidar", 'uthar'])
+                        choices=['USC', 'wifi', 'mmwave', 'pamap'])
     parser.add_argument('--back_up_path', type=str, default=None)
-    parser.add_argument('--baseline_arg', type=str, default=None)
     parser.add_argument('--test_on', type=bool, default=False)
-    parser.add_argument('--model_path', type=str, default=None)
-    parser.add_argument('--ablation', type=str, default=None)
     parser.add_argument('--test_model_path', type=str, default=None)
-    parser.add_argument('--p_encoder', type=str, default=None)
 
     args = parser.parse_args()
-    if args.baseline_arg == "0":
-        args.baseline_arg = 0
     main(args)

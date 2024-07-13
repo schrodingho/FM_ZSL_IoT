@@ -8,7 +8,7 @@ def convert_to_token(xh):
     return xh_id
 
 
-def text_prompt(meta_path, dataset='USC', clipbackbone='ViT-B/16', device='cpu', type='seen'):
+def text_prompt(meta_path, clipbackbone='ViT-B/16', device='cpu'):
     clipmodel, _ = clip.load(clipbackbone, device=device, jit=False)
     for paramclip in clipmodel.parameters():
         paramclip.requires_grad = False
