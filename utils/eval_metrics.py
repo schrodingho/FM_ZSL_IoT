@@ -3,6 +3,8 @@ import logging
 from utils.open_set import os_detect_1, os_detect_4
 from sklearn.metrics import confusion_matrix, precision_recall_fscore_support
 from tqdm import tqdm
+
+# TODO: fix the evaluation metrics (show essential results)
 def model_eval_metrics(config, epoch, trn_vFeatures, val_vFeatures, pos_tFeatures, neg_tFeatures, vis_type_lists, trn_targets, val_targets, auto_knn_params=None):
     logging.info(f"#####################################################\n"
                  f"Epoch: {epoch}")

@@ -58,7 +58,7 @@ def train_entry(config, dataloader, text, model, optimizer, lr_scheduler, device
             inp_actionlist = uniqname.tolist() + random.sample(complement, min(numNeg, len(complement)))
             gpt_aug_actionlist = [GPT_AUG_DICT[dataset][word] for word in inp_actionlist]
             targets = torch.tensor([inp_actionlist.index(n) for n in name]).to(device)
-            vFeature, tFeature, _ = model(vids.to(device), inp_actionlist, gpt_aug_actionlist, type="all")
+            vFeature, tFeature = model(vids.to(device), inp_actionlist, gpt_aug_actionlist)
 
             if not config["dataset_args"]["fake"]:
                 tFeature = tFeature[:seen_num, :]

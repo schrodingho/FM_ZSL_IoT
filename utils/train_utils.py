@@ -2,14 +2,11 @@ import torch
 from tqdm import tqdm
 from data_utils.gpt_aug import GPT_AUG_DICT
 
-
 def extract_trn_feat(config, dataloader, text, model, device):
     actionlist, actiondict, actiontoken = text
 
     dataset_name = config["dataset_args"]["dataset"]
     gpt_aug_actionlist = [GPT_AUG_DICT[dataset_name][word] for word in actionlist]
-    if config["baseline_args"]["baseline"] == "bert":
-        gpt_aug_actionlist = []
 
     model.eval()
     with torch.no_grad():
@@ -19,7 +16,7 @@ def extract_trn_feat(config, dataloader, text, model, device):
         for idx, sample in tqdm(enumerate(dataloader), total=len(dataloader)):
             vids, name, y_true, vis_type = sample
 
-            vFeature, _, _ = model(vids.to(device), actionlist[:1], gpt_aug_actionlist[:1], type="all")
+            vFeature, _ = model(vids.to(device), actionlist[:1], gpt_aug_actionlist[:1])
 
             target_batch = y_true.to(device)
             vis_type = vis_type.to(device)

@@ -45,7 +45,7 @@ def main(args):
     current_log = new_log_dir + "logdir_" + current_time
     if not os.path.exists(current_log):
         os.makedirs(current_log)
-    # TODO: figure out the usage of this parameter
+    # TODO: figure out the usage of this parameter (change the name of this)
     config["model_path"] = current_log
 
     # meta_data generation
@@ -71,7 +71,6 @@ def main(args):
     config["args"]["gzsl_metrics_df"] = gzsl_metrics_df
     config["args"]["gzsl_no_open_metrics_df"] = gzsl_no_open_metrics_df
 
-    # TODO: fix this
     root_dir = None
 
     if use_back_up is None:
@@ -238,14 +237,10 @@ def main(args):
 
     print('==> initialising action recognition model')
 
-
-
-    # model = CLIPrompt(config, text_all, device)
     model = CLIPrompt(config, text_single, device)
     if config["dataset_args"]["fake"]:
         if args.test_on:
             print("run on multiple split models")
-            # model.load_state_dict(torch.load(config["dataset_args"]["backup"] + f"/Type_BASE_{dataset_name}/model_best.pth.tar")["state_dict"])
             model.load_state_dict(
                 torch.load(config["dataset_args"]["backup"] + f"/model_best.pth.tar")["state_dict"])
         else:
@@ -269,8 +264,6 @@ def main(args):
 
     print('======> start training {}, use {}.'.format(dataset_name, device))
 
-
-
     # if args.test_model_path is not None:
     #     config["args"]["test_model_path"] = args.test_model_path
     #     config["args"]["spe_path"] = None
@@ -281,14 +274,11 @@ def main(args):
     #     test_train_val.test_CLIPrompt(config, input_loader, text_single, model, device)
     #     return
 
-
-    open_acc = 0
     input_loader = [trnloader, val_tune_loader, val_mix_loader]
     if config["dataset_args"]["fake"] == True:
         input_loader = [fakeloader, trnloader, val_tune_loader, val_mix_loader]
     open_acc = train.train_entry(config, input_loader, text_single,
                                                    model, optimizer, lr_scheduler, device)
-
 
     logging.info(f"########################################\n Best open set accuracy: {open_acc}")
 

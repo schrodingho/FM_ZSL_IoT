@@ -18,7 +18,7 @@ def val_parameter_define(config, dataloader, text, model, trn_vFeatures, trn_tar
         for idx, sample in tqdm(enumerate(dataloader), total=len(dataloader)):
             vids, name, y_true, vis_type = sample
 
-            vFeature, _, _ = model(vids.to(device), actionlist[:1], gpt_aug_actionlist[:1], type="all")
+            vFeature, _ = model(vids.to(device), actionlist[:1], gpt_aug_actionlist[:1])
 
             target_batch = y_true.to(device)
             vFeature = vFeature / vFeature.norm(dim=-1, keepdim=True)
@@ -27,17 +27,17 @@ def val_parameter_define(config, dataloader, text, model, trn_vFeatures, trn_tar
             vFeature_lists = torch.cat([vFeature_lists, vFeature], dim=0)
 
     if config["open_set_args"]["cluster"] == True:
-        targets_knn_tensor, targets_thres_tensor = knn_parameter_define(config, trn_vFeatures, trn_targets, vFeature_lists, targets)
+        targets_knn_tensor, targets_thres_tensor = knn_parameter_define_cluster(config, trn_vFeatures, trn_targets, vFeature_lists, targets)
         targets_knn_tensor = targets_knn_tensor.to(device)
         targets_thres_tensor = targets_thres_tensor.to(device)
         auto_knn_params = {"k": targets_knn_tensor, "v": targets_thres_tensor}
     else:
-        targets_knn_val, target_thres = knn_parameter_define_2(config, trn_vFeatures, trn_targets, vFeature_lists, targets)
+        targets_knn_val, target_thres = knn_parameter_define_gd(config, trn_vFeatures, trn_targets, vFeature_lists, targets)
         auto_knn_params = {"k": targets_knn_val, "v": target_thres}
 
     return auto_knn_params
 
-def knn_parameter_define(config, trn_vFeatures, trn_targets, val_vFeatures, val_targets):
+def knn_parameter_define_cluster(config, trn_vFeatures, trn_targets, val_vFeatures, val_targets):
     """
     define each cluster's threshold and k value
     """
@@ -69,9 +69,9 @@ def knn_parameter_define(config, trn_vFeatures, trn_targets, val_vFeatures, val_
     return targets_knn_tensor, targets_thres_tensor
 
 
-def knn_parameter_define_2(config, trn_vFeatures, trn_targets, val_vFeatures, val_targets):
+def knn_parameter_define_gd(config, trn_vFeatures, trn_targets, val_vFeatures, val_targets):
     """
-    globally defining the threshold (or k)
+    globally defining the threshold (or k) (ONE CLUSTER)
     """
     # k_defined_percent = config["open_set_args"]["knn_percent"]
     k_defined_val = config["open_set_args"]["knn_val"]

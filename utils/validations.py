@@ -8,8 +8,8 @@ def mix_validation(config, epoch, dataloader, text, model, trn_vFeatures, trn_ta
     dataset_name = config["dataset_args"]["dataset"]
     gpt_aug_actionlist = [GPT_AUG_DICT[dataset_name][word] for word in actionlist]
     seen_num = config["dataset_args"]["seen_num"]
-    if config["baseline_args"]["baseline"] == "bert":
-        gpt_aug_actionlist = []
+    # if config["baseline_args"]["baseline"] == "bert":
+    #     gpt_aug_actionlist = []
 
     model.eval()
     with torch.no_grad():
@@ -22,14 +22,14 @@ def mix_validation(config, epoch, dataloader, text, model, trn_vFeatures, trn_ta
             vis_type = vis_type.to(device)
 
             if idx == 0:
-                vFeature, tFeature, _ = model(vids.to(device), actionlist, gpt_aug_actionlist, type="all")
+                vFeature, tFeature = model(vids.to(device), actionlist, gpt_aug_actionlist)
                 all_tFeature = tFeature
                 pos_tFeature = tFeature[:seen_num, :]
                 neg_tFeature = tFeature[seen_num:, :]
                 pos_tFeature = pos_tFeature / pos_tFeature.norm(dim=-1, keepdim=True)
                 neg_tFeature = neg_tFeature / neg_tFeature.norm(dim=-1, keepdim=True)
             else:
-                vFeature, _, _ = model(vids.to(device), actionlist[:1], gpt_aug_actionlist[:1], type="all")
+                vFeature, _ = model(vids.to(device), actionlist[:1], gpt_aug_actionlist[:1])
 
             target_batch = y_true.to(device)
 
@@ -45,8 +45,10 @@ def mix_validation(config, epoch, dataloader, text, model, trn_vFeatures, trn_ta
         eval_dict = special_model_eval_metrics(special_model, dataloader, config, epoch,
                                                trn_vFeatures, vFeature_lists, pos_tFeature, neg_tFeature,
                                                vis_lists, trn_targets, val_targets, device=device, auto_knn_params=auto_knn_params)
+    # TODO: remove this?
     gzsl_eval_dict = gzsl_metrics(config, epoch, trn_vFeatures, vFeature_lists, pos_tFeature, neg_tFeature, vis_lists, trn_targets, val_targets, auto_knn_params=auto_knn_params)
 
+    # TODO: modify the parameter return
     mix_val_data_pack = [vFeature_lists, val_targets, vis_lists, all_tFeature, neg_tFeature, gzsl_eval_dict]
 
     return eval_dict, mix_val_data_pack

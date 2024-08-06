@@ -71,24 +71,7 @@ class CLIPrompt(torch.nn.Module):
         self.prompt_actiontoken.to(self.device)
 
 
-    def forward(self, vids, inp_actionlist, gpt_actionlist=None, type="seen"):
-        # replace_text_embedding at every iter
-        # otherwise RuntimeError: backward through the graph a second time
-        # if type == "all":
-        #     self.actionlist = self.all_actionlist
-        #     self.actiondict = self.all_actiondict
-        #     self.actiontoken = self.all_actiontoken
-        # elif type == "seen":
-        #     self.actionlist = self.seen_actionlist
-        #     self.actiondict = self.seen_actiondict
-        #     self.actiontoken = self.seen_actiontoken
-        # elif type == "unseen":
-        #     self.actionlist = self.unseen_actionlist
-        #     self.actiondict = self.unseen_actiondict
-        #     self.actiontoken = self.unseen_actiontoken
-        # else:
-        #     raise NotImplementedError
-
+    def forward(self, vids, inp_actionlist, gpt_actionlist=None):
         vFeature = self.feat_encoder(vids.float())
 
         if gpt_actionlist != []:
@@ -101,7 +84,7 @@ class CLIPrompt(torch.nn.Module):
         if gpt_actionlist != []:
             tFeature = self.cross_att(q=tFeature, k=tFeat_gpt, v=tFeature)
 
-        return vFeature, tFeature, vFeature
+        return vFeature, tFeature
 
 
 class Cross_Att(nn.Module):
@@ -138,7 +121,10 @@ def weights_init(m):
         nn.init.constant_(m.bias, 0)
 
 
-'''Multi Self-Attention: VisionTransformer for PAMAP'''
+"""
+VisionTransformer Backbone from https://github.com/xushige/HAR-Dataset-Preprocess/blob/main/models/vit.py
+"""
+
 class VisionTransformerBlock(nn.Module):
     def __init__(self, input_dim=256, head_num=4, att_size=64):
         super().__init__()
@@ -157,10 +143,6 @@ class VisionTransformerBlock(nn.Module):
             nn.LayerNorm(input_dim)
         )
     def patch_merge(self, x):
-        '''
-            用于进行 1/2 降采样
-            x.shape: [batch, modal_leng, patch_num, input_dim]
-        '''
         batch, modal_leng, patch_num, input_dim = x.shape
         if patch_num % 2:
             x = nn.ZeroPad2d((0, 0, 0, 1))(x)

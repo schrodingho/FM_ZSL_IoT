@@ -1,7 +1,7 @@
 """
-Author: Yonglong Tian (yonglong@mit.edu)
-Date: May 07, 2020
+Supervised Contrastive Loss Code from: https://github.com/HobbitLong/SupContrast/blob/master/losses.py
 """
+
 from __future__ import print_function
 
 import torch
