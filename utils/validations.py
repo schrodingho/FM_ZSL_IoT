@@ -8,8 +8,6 @@ def mix_validation(config, epoch, dataloader, text, model, trn_vFeatures, trn_ta
     dataset_name = config["dataset_args"]["dataset"]
     gpt_aug_actionlist = [GPT_AUG_DICT[dataset_name][word] for word in actionlist]
     seen_num = config["dataset_args"]["seen_num"]
-    # if config["baseline_args"]["baseline"] == "bert":
-    #     gpt_aug_actionlist = []
 
     model.eval()
     with torch.no_grad():

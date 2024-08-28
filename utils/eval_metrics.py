@@ -14,6 +14,7 @@ def model_eval_metrics(config, epoch, trn_vFeatures, val_vFeatures, pos_tFeature
     unique_seen_classes = torch.unique(val_targets[vis_type_lists == 0])
     unique_unseen_classes = torch.unique(val_targets[vis_type_lists == 1])
 
+    # TODO: fix this
     trn_vFeatures = trn_vFeatures / trn_vFeatures.norm(dim=-1, keepdim=True)
     val_vFeatures = val_vFeatures / val_vFeatures.norm(dim=-1, keepdim=True)
     pos_tFeatures = pos_tFeatures / pos_tFeatures.norm(dim=-1, keepdim=True)
