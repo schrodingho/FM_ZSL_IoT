@@ -44,8 +44,8 @@ def mix_validation(config, epoch, dataloader, text, model, trn_vFeatures, trn_ta
                                                trn_vFeatures, vFeature_lists, pos_tFeature, neg_tFeature,
                                                vis_lists, trn_targets, val_targets, device=device, auto_knn_params=auto_knn_params)
     # TODO: remove this?
-    gzsl_eval_dict = gzsl_metrics(config, epoch, trn_vFeatures, vFeature_lists, pos_tFeature, neg_tFeature, vis_lists, trn_targets, val_targets, auto_knn_params=auto_knn_params)
-
+    # gzsl_eval_dict = gzsl_metrics(config, epoch, trn_vFeatures, vFeature_lists, pos_tFeature, neg_tFeature, vis_lists, trn_targets, val_targets, auto_knn_params=auto_knn_params)
+    gzsl_eval_dict = None
     # TODO: modify the parameter return
     mix_val_data_pack = [vFeature_lists, val_targets, vis_lists, all_tFeature, neg_tFeature, gzsl_eval_dict]
 

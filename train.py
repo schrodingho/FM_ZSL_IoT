@@ -112,17 +112,17 @@ def train_entry(config, dataloader, text, model, optimizer, lr_scheduler, device
                 eval_dict, val_feat_pack = mix_validation(config, epoch, val_mix_loader, text, model, known_trn_vFeatures, known_trn_targets, device, auto_knn_params)
                 [val_vFeatures, val_targets, val_vis_lists, pos_tFeature, neg_tFeature, gzsl_eval_dict] = val_feat_pack
 
-                # select unseen
-                zsl_unseen_1 = eval_dict["zsl_unseen_1"]
-                zsl_unseen_2 = eval_dict["zsl_unseen_2"]
-                gzsl_unseen = gzsl_eval_dict["zsl_unseen_2"]
+                # # select unseen
+                # zsl_unseen_1 = eval_dict["zsl_unseen_1"]
+                # zsl_unseen_2 = eval_dict["zsl_unseen_2"]
+                # gzsl_unseen = gzsl_eval_dict["zsl_unseen_2"]
 
-                open_set = eval_dict["open_set"]
+                open_set_acc = eval_dict["open_set"]
                 open_set_dict = eval_dict["open_set_dict"]
-                os_FPR = open_set_dict["FPR"]
-                os_TPR = open_set_dict["TPR"]
-                os_TNR = open_set_dict["TNR"]
-                os_FNR = open_set_dict["FNR"]
+                # os_FPR = open_set_dict["FPR"]
+                # os_TPR = open_set_dict["TPR"]
+                # os_TNR = open_set_dict["TNR"]
+                # os_FNR = open_set_dict["FNR"]
                 os_precision = open_set_dict["precision"]
                 os_recall = open_set_dict["recall"]
                 os_fscore = open_set_dict["fscore"]
@@ -131,36 +131,34 @@ def train_entry(config, dataloader, text, model, optimizer, lr_scheduler, device
                 gzsl_u = eval_dict["gzsl_dict"]["U"].detach().cpu().numpy()
                 gzsl_h = eval_dict["gzsl_dict"]["H"].detach().cpu().numpy()
 
-                gzsl_no_open_s = gzsl_eval_dict["gzsl_dict"]["S"].detach().cpu().numpy()
-                gzsl_no_open_u = gzsl_eval_dict["gzsl_dict"]["U"].detach().cpu().numpy()
-                gzsl_no_open_h = gzsl_eval_dict["gzsl_dict"]["H"].detach().cpu().numpy()
+                # gzsl_no_open_s = gzsl_eval_dict["gzsl_dict"]["S"].detach().cpu().numpy()
+                # gzsl_no_open_u = gzsl_eval_dict["gzsl_dict"]["U"].detach().cpu().numpy()
+                # gzsl_no_open_h = gzsl_eval_dict["gzsl_dict"]["H"].detach().cpu().numpy()
 
-                print(f"Epoch: {epoch}, avg_recall:{eval_dict['avg_recall']}, avg_prec:{eval_dict['avg_precision']}, avg_f1:{eval_dict['avg_f1']}")
-                logging.info(f"Epoch: {epoch}, avg_recall:{eval_dict['avg_recall']}, avg_prec:{eval_dict['avg_precision']}, avg_f1:{eval_dict['avg_f1']}")
+                # print(f"Epoch: {epoch}, avg_recall:{eval_dict['avg_recall']}, avg_prec:{eval_dict['avg_precision']}, avg_f1:{eval_dict['avg_f1']}")
+                # logging.info(f"Epoch: {epoch}, avg_recall:{eval_dict['avg_recall']}, avg_prec:{eval_dict['avg_precision']}, avg_f1:{eval_dict['avg_f1']}")
 
-                open_set_df.loc[len(open_set_df)] = [epoch, open_set.detach().cpu().numpy(), os_FPR, os_FNR, os_TNR, os_TPR, os_precision, os_recall, os_fscore]
-                metrics_df.loc[len(metrics_df)] = [epoch, eval_dict['avg_recall'], eval_dict['avg_precision'], eval_dict['avg_f1'], zsl_unseen_2.detach().cpu().numpy()]
-                no_open_metrics_df.loc[len(no_open_metrics_df)] = [epoch, gzsl_eval_dict['avg_recall'], gzsl_eval_dict['avg_precision'], gzsl_eval_dict['avg_f1'],
-                                                                   gzsl_unseen.detach().cpu().numpy()]
+                open_set_df.loc[len(open_set_df)] = [epoch, open_set_acc.detach().cpu().numpy(), 0, 0, 0, 0, os_precision, os_recall, os_fscore]
+                # metrics_df.loc[len(metrics_df)] = [epoch, eval_dict['avg_recall'], eval_dict['avg_precision'], eval_dict['avg_f1'], zsl_unseen_2.detach().cpu().numpy()]
+                # no_open_metrics_df.loc[len(no_open_metrics_df)] = [epoch, gzsl_eval_dict['avg_recall'], gzsl_eval_dict['avg_precision'], gzsl_eval_dict['avg_f1'],
+                #                                                    gzsl_unseen.detach().cpu().numpy()]
 
                 gzsl_metrics_df.loc[len(gzsl_metrics_df)] = [gzsl_s, gzsl_u, gzsl_h]
-                gzsl_no_open_metrics_df.loc[len(gzsl_no_open_metrics_df)] = [gzsl_no_open_s, gzsl_no_open_u, gzsl_no_open_h]
+                # gzsl_no_open_metrics_df.loc[len(gzsl_no_open_metrics_df)] = [gzsl_no_open_s, gzsl_no_open_u, gzsl_no_open_h]
 
-                if open_set > best_open_acc:
-                    best_open_acc = open_set
+                if open_set_acc > best_open_acc:
+                    best_open_acc = open_set_acc
                     print(f"Epoch: {epoch}, Best Open Set Acc: {best_open_acc}")
                     logging.info(f"Epoch: {epoch}, Best Open Set Acc: {best_open_acc}")
 
                 # sum_acc = metric_seen_acc + metric_unseen_acc
-                if zsl_unseen_1 > best_unseen_acc_1:
-                    best_unseen_acc_1 = zsl_unseen_1
-                    print(f"Epoch: {epoch}, Best Unseen Acc (select): {best_unseen_acc_1}")
-                    logging.info(f"Epoch: {epoch}, Best Unseen Acc (select): {best_unseen_acc_1}")
+                # if zsl_unseen_1 > best_unseen_acc_1:
+                #     best_unseen_acc_1 = zsl_unseen_1
+                #     print(f"Epoch: {epoch}, Best Unseen Acc (select): {best_unseen_acc_1}")
+                #     logging.info(f"Epoch: {epoch}, Best Unseen Acc (select): {best_unseen_acc_1}")
 
                 if gzsl_h > best_H:
                     best_H = gzsl_h
-                    # print(f"Epoch: {epoch}, Best Unseen Acc (all): {best_unseen_acc_2}")
-                    # logging.info(f"Epoch: {epoch}, Best Unseen Acc (all): {best_unseen_acc_2}")
                     print(f"Epoch: {epoch}, Best H: {best_H}")
                     logging.info(f"Epoch: {epoch}, Best H: {best_H}")
 

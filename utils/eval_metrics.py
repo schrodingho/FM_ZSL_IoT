@@ -1,6 +1,6 @@
 import torch
 import logging
-from utils.open_set import os_detect_1, os_detect_4
+from utils.open_set import os_detect_knn, os_detect_cluster
 from sklearn.metrics import confusion_matrix, precision_recall_fscore_support
 from tqdm import tqdm
 
@@ -14,7 +14,6 @@ def model_eval_metrics(config, epoch, trn_vFeatures, val_vFeatures, pos_tFeature
     unique_seen_classes = torch.unique(val_targets[vis_type_lists == 0])
     unique_unseen_classes = torch.unique(val_targets[vis_type_lists == 1])
 
-    # TODO: fix this
     trn_vFeatures = trn_vFeatures / trn_vFeatures.norm(dim=-1, keepdim=True)
     val_vFeatures = val_vFeatures / val_vFeatures.norm(dim=-1, keepdim=True)
     pos_tFeatures = pos_tFeatures / pos_tFeatures.norm(dim=-1, keepdim=True)
@@ -25,16 +24,7 @@ def model_eval_metrics(config, epoch, trn_vFeatures, val_vFeatures, pos_tFeature
 
     eval_dict = {
         "open_set" : 0,
-        "zsl_unseen_1": 0,
-        "zsl_unseen_2": 0,
-        "avg_recall": 0,
-        "avg_precision": 0,
-        "avg_f1": 0,
         "open_set_dict": {
-            "FPR": 0,
-            "FNR": 0,
-            "TNR": 0,
-            "TPR": 0,
             "precision": 0,
             "recall": 0,
             "fscore": 0,
@@ -48,12 +38,12 @@ def model_eval_metrics(config, epoch, trn_vFeatures, val_vFeatures, pos_tFeature
 
     if config["open_set_args"]["manual"] == False:
         if config["open_set_args"]["cluster"] == True:
-            select_seen_idx, select_unseen_idx = os_detect_4(trn_vFeatures, val_vFeatures, trn_targets, val_targets, auto_knn_params)
+            select_seen_idx, select_unseen_idx = os_detect_cluster(trn_vFeatures, val_vFeatures, trn_targets, val_targets, auto_knn_params)
         else:
             knn_val, dis_threshold = auto_knn_params["k"], auto_knn_params["v"]
-            select_seen_idx, select_unseen_idx = os_detect_1(trn_vFeatures, val_vFeatures, knn_val, dis_threshold)
+            select_seen_idx, select_unseen_idx = os_detect_knn(trn_vFeatures, val_vFeatures, knn_val, dis_threshold)
     else:
-        select_seen_idx, select_unseen_idx = os_detect_1(trn_vFeatures, val_vFeatures, knn_val, dis_threshold)
+        select_seen_idx, select_unseen_idx = os_detect_knn(trn_vFeatures, val_vFeatures, knn_val, dis_threshold)
 
     assert len(seen_idx) == len(select_seen_idx)
     assert len(unseen_idx) == len(select_unseen_idx)
@@ -63,29 +53,10 @@ def model_eval_metrics(config, epoch, trn_vFeatures, val_vFeatures, pos_tFeature
     y_true = unseen_idx.int().detach().cpu().numpy()
     y_pred = select_unseen_idx.int().detach().cpu().numpy()
 
-    y_true_seen = seen_idx.int().detach().cpu().numpy()
-    y_pred_seen = select_seen_idx.int().detach().cpu().numpy()
-    os_seen_precision, os_seen_recall, os_seen_fscore, os_seen_support = precision_recall_fscore_support(y_true_seen, y_pred_seen, average="weighted")
-
-    cm = confusion_matrix(y_true, y_pred)
-    TN = cm[0, 0]
-    FP = cm[0, 1]
-    FN = cm[1, 0]
-    TP = cm[1, 1]
-
-    os_FPR = FP / (FP + TN)
-    os_FNR = FN / (FN + TP)
-    os_TNR = TN / (TN + FP)
-    os_TPR = TP / (TP + FN)
     os_precision, os_recall, os_fscore, os_support = precision_recall_fscore_support(y_true, y_pred, average="weighted")
 
-    print(f"os_seen_precision: {os_seen_precision}, os_seen_recall: {os_seen_recall}, os_seen_fscore: {os_seen_fscore}")
     print(f"os_unseen_precision: {os_precision}, os_unseen_recall: {os_recall}, os_unseen_fscore: {os_fscore}")
 
-    eval_dict["open_set_dict"]["FPR"] = os_FPR
-    eval_dict["open_set_dict"]["FNR"] = os_FNR
-    eval_dict["open_set_dict"]["TNR"] = os_TNR
-    eval_dict["open_set_dict"]["TPR"] = os_TPR
     eval_dict["open_set_dict"]["precision"] = os_precision
     eval_dict["open_set_dict"]["recall"] = os_recall
     eval_dict["open_set_dict"]["fscore"] = os_fscore
@@ -93,11 +64,10 @@ def model_eval_metrics(config, epoch, trn_vFeatures, val_vFeatures, pos_tFeature
     correct_hit_seen_idx = (seen_idx & (select_seen_idx == seen_idx)).bool()
     correct_hit_unseen_idx = (unseen_idx & (select_unseen_idx == unseen_idx)).bool()
     incorrect_hit_seen_idx = (seen_idx & (select_unseen_idx == seen_idx)).bool()
-    incorrect_hit_unseen_idx = (unseen_idx & (select_seen_idx == unseen_idx)).bool()
+    # incorrect_hit_unseen_idx = (unseen_idx & (select_seen_idx == unseen_idx)).bool()
 
     correct_hit_seen_vFeature = val_vFeatures[correct_hit_seen_idx]
     correct_hit_unseen_vFeature = val_vFeatures[correct_hit_unseen_idx]
-    # TODO: fix bug
 
     # seen is classified as unseen
     incorrect_hit_seen_vFeature = val_vFeatures[incorrect_hit_seen_idx]
@@ -136,52 +106,49 @@ def model_eval_metrics(config, epoch, trn_vFeatures, val_vFeatures, pos_tFeature
 
     harmonic_mean = 2 * per_class_acc_seen * per_class_acc_unseen / (per_class_acc_seen + per_class_acc_unseen)
 
-    val_unseen_target_dict, unique_targets = target_cnt(val_unseen_targets)
-    zsl_unseen_hits_target_dict, _ = target_cnt(zsl_unseen_hits_target, other=True, unique_targets=unique_targets)
-    incorrect_seen_in_unseen_target_dict, _ = target_cnt(incorrect_seen_in_unseen_target, other=True, unique_targets=unique_targets)
-    unseen_pred_dict, _ = target_cnt(unseen_max_idx, other=True, unique_targets=unique_targets)
+    # val_unseen_target_dict, unique_targets = target_cnt(val_unseen_targets)
+    # zsl_unseen_hits_target_dict, _ = target_cnt(zsl_unseen_hits_target, other=True, unique_targets=unique_targets)
+    # incorrect_seen_in_unseen_target_dict, _ = target_cnt(incorrect_seen_in_unseen_target, other=True, unique_targets=unique_targets)
+    # unseen_pred_dict, _ = target_cnt(unseen_max_idx, other=True, unique_targets=unique_targets)
 
 
     #### TODO: confusion matrix
     #### evaluation metrics
-    avg_recall, avg_precision, avg_f1 = avg_metrics(val_unseen_target_dict, zsl_unseen_hits_target_dict, unseen_pred_dict, incorrect_seen_in_unseen_target_dict)
+    # avg_recall, avg_precision, avg_f1 = avg_metrics(val_unseen_target_dict, zsl_unseen_hits_target_dict, unseen_pred_dict, incorrect_seen_in_unseen_target_dict)
 
     # metric 1:
     seen_hits_rate = correct_hit_seen_idx.sum() / seen_idx.sum()
     unseen_hits_rate = correct_hit_unseen_idx.sum() / unseen_idx.sum()
+    open_set_acc = (seen_hits_rate + unseen_hits_rate) / 2
 
-    print(f"[Seen] correct_seen_hits / all_seen: {seen_hits_rate}\n"
-          f"[Unseen] correct_unseen_hits / all_unseen: {unseen_hits_rate}\n")
-    print(f"Open Set Acc: {(seen_hits_rate + unseen_hits_rate) / 2}")
-    logging.info(f"[Seen] correct_seen_hits / all_seen: {seen_hits_rate}\n"
-                 f"[Unseen] correct_unseen_hits / all_unseen: {unseen_hits_rate}\n"
-                 f"Open Set Acc: {(seen_hits_rate + unseen_hits_rate) / 2}")
+    print(f"Open Set Acc: {open_set_acc}")
+    logging.info(f"Open Set Acc: {open_set_acc}")
 
 
-    # metric 2:
-    zsl_seen_hits_div_correct_seen = zsl_seen_hits_idx.sum() / len(correct_hit_seen_targets)
-    zsl_unseen_hits_div_correct_unseen = zsl_unseen_hits_idx.sum() / len(correct_hit_unseen_targets)
-    print(f"[Seen] seen_zsl_hits / correct_seen_hits: {zsl_seen_hits_div_correct_seen}\n"
-          f"[Unseen] unseen_zsl_hits / correct_unseen_hits: {zsl_unseen_hits_div_correct_unseen}")
-
-    logging.info(f"[Seen] seen_zsl_hits / correct_seen_hits: {zsl_seen_hits_div_correct_seen}\n"
-                    f"[Unseen] unseen_zsl_hits / correct_unseen_hits: {zsl_unseen_hits_div_correct_unseen}")
-
-
-    # metric 3:
-    zsl_seen_hits_div_select_seen = zsl_seen_hits_idx.sum() / select_seen_idx.sum()
-    zsl_unseen_hits_div_select_unseen = zsl_unseen_hits_idx.sum() / select_unseen_idx.sum()
-
-
-    # metric 4:
-    zsl_seen_hits_div_seen_idx = zsl_seen_hits_idx.sum() / seen_idx.sum()
-    zsl_unseen_hits_div_unseen_idx = zsl_unseen_hits_idx.sum() / unseen_idx.sum()
-
-    print(f"[Seen] ZSL_seen_hits / all_seen: {zsl_seen_hits_div_seen_idx}\n"
-          f"[Unseen] ZSL_unseen_hits / all_unseen: {zsl_unseen_hits_div_unseen_idx}")
-
-    logging.info(f"[Seen] ZSL_seen_hits / all_seen: {zsl_seen_hits_div_seen_idx}\n"
-                    f"[Unseen] ZSL_unseen_hits / all_unseen: {zsl_unseen_hits_div_unseen_idx}")
+    # # metric 2:
+    # zsl_seen_hits_div_correct_seen = zsl_seen_hits_idx.sum() / len(correct_hit_seen_targets)
+    # zsl_unseen_hits_div_correct_unseen = zsl_unseen_hits_idx.sum() / len(correct_hit_unseen_targets)
+    # print(f"[Seen] seen_zsl_hits / correct_seen_hits: {zsl_seen_hits_div_correct_seen}\n"
+    #       f"[Unseen] unseen_zsl_hits / correct_unseen_hits: {zsl_unseen_hits_div_correct_unseen}")
+    #
+    # logging.info(f"[Seen] seen_zsl_hits / correct_seen_hits: {zsl_seen_hits_div_correct_seen}\n"
+    #                 f"[Unseen] unseen_zsl_hits / correct_unseen_hits: {zsl_unseen_hits_div_correct_unseen}")
+    #
+    #
+    # # metric 3:
+    # zsl_seen_hits_div_select_seen = zsl_seen_hits_idx.sum() / select_seen_idx.sum()
+    # zsl_unseen_hits_div_select_unseen = zsl_unseen_hits_idx.sum() / select_unseen_idx.sum()
+    #
+    #
+    # # metric 4:
+    # zsl_seen_hits_div_seen_idx = zsl_seen_hits_idx.sum() / seen_idx.sum()
+    # zsl_unseen_hits_div_unseen_idx = zsl_unseen_hits_idx.sum() / unseen_idx.sum()
+    #
+    # print(f"[Seen] ZSL_seen_hits / all_seen: {zsl_seen_hits_div_seen_idx}\n"
+    #       f"[Unseen] ZSL_unseen_hits / all_unseen: {zsl_unseen_hits_div_unseen_idx}")
+    #
+    # logging.info(f"[Seen] ZSL_seen_hits / all_seen: {zsl_seen_hits_div_seen_idx}\n"
+    #                 f"[Unseen] ZSL_unseen_hits / all_unseen: {zsl_unseen_hits_div_unseen_idx}")
 
 
 
@@ -195,14 +162,16 @@ def model_eval_metrics(config, epoch, trn_vFeatures, val_vFeatures, pos_tFeature
     eval_dict["gzsl_dict"]["U"] = per_class_acc_unseen
     eval_dict["gzsl_dict"]["H"] = harmonic_mean
 
-    eval_dict["open_set"] = (seen_hits_rate + unseen_hits_rate) / 2
-    eval_dict["zsl_unseen_1"] = zsl_unseen_hits_div_select_unseen
-    # eval_dict["zsl_unseen_2"] = zsl_unseen_hits_div_unseen_idx
-    # modify to per class acc
-    eval_dict["zsl_unseen_2"] = per_class_acc_unseen
-    eval_dict["avg_recall"] = avg_recall
-    eval_dict["avg_precision"] = avg_precision
-    eval_dict["avg_f1"] = avg_f1
+    eval_dict["open_set"] = open_set_acc
+
+    # eval_dict["open_set"] = (seen_hits_rate + unseen_hits_rate) / 2
+    # eval_dict["zsl_unseen_1"] = zsl_unseen_hits_div_select_unseen
+    # # eval_dict["zsl_unseen_2"] = zsl_unseen_hits_div_unseen_idx
+    # # modify to per class acc
+    # eval_dict["zsl_unseen_2"] = per_class_acc_unseen
+    # eval_dict["avg_recall"] = avg_recall
+    # eval_dict["avg_precision"] = avg_precision
+    # eval_dict["avg_f1"] = avg_f1
 
     return eval_dict
 
@@ -416,12 +385,12 @@ def special_model_eval_metrics(special_model, val_mix_loader, config, epoch, trn
     }
     if config["open_set_args"]["manual"] == False:
         if config["open_set_args"]["cluster"] == True:
-            select_seen_idx, select_unseen_idx = os_detect_4(trn_vFeatures, val_vFeatures, trn_targets, val_targets, auto_knn_params)
+            select_seen_idx, select_unseen_idx = os_detect_cluster(trn_vFeatures, val_vFeatures, trn_targets, val_targets, auto_knn_params)
         else:
             knn_val, dis_threshold = auto_knn_params["k"], auto_knn_params["v"]
-            select_seen_idx, select_unseen_idx = os_detect_1(trn_vFeatures, val_vFeatures, knn_val, dis_threshold)
+            select_seen_idx, select_unseen_idx = os_detect_knn(trn_vFeatures, val_vFeatures, knn_val, dis_threshold)
     else:
-        select_seen_idx, select_unseen_idx = os_detect_1(trn_vFeatures, val_vFeatures, knn_val, dis_threshold)
+        select_seen_idx, select_unseen_idx = os_detect_knn(trn_vFeatures, val_vFeatures, knn_val, dis_threshold)
 
     assert len(seen_idx) == len(select_seen_idx)
     assert len(unseen_idx) == len(select_unseen_idx)

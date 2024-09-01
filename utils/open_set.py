@@ -85,7 +85,7 @@ def knn_parameter_define_gd(config, trn_vFeatures, trn_targets, val_vFeatures, v
 
     return targets_knn_val, target_thres
 
-def os_detect_1(trn_vFeatures, val_vFeatures, knn_val, dis_threshold):
+def os_detect_knn(trn_vFeatures, val_vFeatures, knn_val, dis_threshold):
     # 1. depends on the training seen data (KNN-based)
     # calculate the distance between val_vFeatures and trn_vFeatures
     dist_wifi_text = torch.cdist(val_vFeatures.unsqueeze(0), trn_vFeatures.unsqueeze(0), p=2)
@@ -112,7 +112,7 @@ def os_detect_1_params_search(trn_vFeatures, val_vFeatures, knn_val, percentage=
 
     return threshold_last
 
-def os_detect_4(trn_vFeatures, val_vFeatures, trn_targets, val_targets, auto_knn_params):
+def os_detect_cluster(trn_vFeatures, val_vFeatures, trn_targets, val_targets, auto_knn_params):
     # 4. depends on the predefined threshold
     targets_knn_tensor = auto_knn_params["k"]
     target_thres_tensor = auto_knn_params["v"]
