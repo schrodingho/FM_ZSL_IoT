@@ -22,7 +22,9 @@ def mix_validation(config, epoch, dataloader, text, model, trn_vFeatures, trn_ta
             if idx == 0:
                 vFeature, tFeature = model(vids.to(device), actionlist, gpt_aug_actionlist)
                 all_tFeature = tFeature
+                # seen Text embedding
                 pos_tFeature = tFeature[:seen_num, :]
+                # unseen Text embedding
                 neg_tFeature = tFeature[seen_num:, :]
                 pos_tFeature = pos_tFeature / pos_tFeature.norm(dim=-1, keepdim=True)
                 neg_tFeature = neg_tFeature / neg_tFeature.norm(dim=-1, keepdim=True)

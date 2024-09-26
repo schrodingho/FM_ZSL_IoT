@@ -76,9 +76,11 @@ class CLIPrompt(torch.nn.Module):
 
         if gpt_actionlist != []:
             gpt_token = clip.tokenize(gpt_actionlist).to(self.device)
+            # Hard Prompt
             tFeat_gpt = self.clipmodel.encode_text_original(gpt_token)
 
         self.replace_text_embedding(inp_actionlist)
+        # Soft Prompt
         tFeature = self.clipmodel.encode_text(self.text_embedding, self.prompt_actiontoken)
 
         if gpt_actionlist != []:

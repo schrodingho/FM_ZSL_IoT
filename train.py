@@ -16,14 +16,17 @@ import warnings
 warnings.filterwarnings("ignore")
 
 def train_entry(config, dataloader, text, model, optimizer, lr_scheduler, device):
+    # *************** parameters for loss and training *************** #
     temperature = 0.2
     logit_scale = 0.07
 
+    # *************** loss function *************** #
     loss_supcon = SupConLoss(temperature=temperature)
 
     timestart = time.time()
     iteration = config["args"]["start_iter"]
     numContrast = config["args"]["numContrast"]
+
     if config["dataset_args"]["fake"]:
         fakeloader, trnloader, val_tune_loader, val_mix_loader = dataloader
         iteration_epoch = len(fakeloader)
@@ -39,7 +42,6 @@ def train_entry(config, dataloader, text, model, optimizer, lr_scheduler, device
     model.train()
     model.clipmodel.eval()
     best_open_acc = 0
-    best_unseen_acc_1 = 0
     best_H = 0
     epoch = 0
     epochs = config["args"]["epochs"]
@@ -58,6 +60,9 @@ def train_entry(config, dataloader, text, model, optimizer, lr_scheduler, device
             inp_actionlist = uniqname.tolist() + random.sample(complement, min(numNeg, len(complement)))
             gpt_aug_actionlist = [GPT_AUG_DICT[dataset][word] for word in inp_actionlist]
             targets = torch.tensor([inp_actionlist.index(n) for n in name]).to(device)
+
+            # *************** vFeature <==> Projected IoT Embedding *************** #
+            # *************** tFeature <==> Text Embedding (Class Prototypes) *************** #
             vFeature, tFeature = model(vids.to(device), inp_actionlist, gpt_aug_actionlist)
 
             if not config["dataset_args"]["fake"]:
@@ -101,28 +106,24 @@ def train_entry(config, dataloader, text, model, optimizer, lr_scheduler, device
         if epoch >= config["args"]["val_epoch"]:
             model.eval()
             start_val_epoch = 0
-            if config["dataset_args"]["dataset"] == "wifi":
-                start_val_epoch = 10
+            # if config["dataset_args"]["dataset"] == "wifi":
+            #     start_val_epoch = 10
             if epoch >= start_val_epoch:
                 known_trn_vFeatures, known_trn_targets = extract_trn_feat(config, trnloader, text, model, device)
                 if config["open_set_args"]["manual"] == False:
+                    # *************** define parameters for KNN using validation dataset *************** #
                     auto_knn_params = val_parameter_define(config, val_tune_loader, text, model, known_trn_vFeatures, known_trn_targets, device)
                 else:
                     auto_knn_params = None
+                # *************** validation under generalized zero-shot learning setting *************** #
                 eval_dict, val_feat_pack = mix_validation(config, epoch, val_mix_loader, text, model, known_trn_vFeatures, known_trn_targets, device, auto_knn_params)
                 [val_vFeatures, val_targets, val_vis_lists, pos_tFeature, neg_tFeature, gzsl_eval_dict] = val_feat_pack
 
-                # # select unseen
-                # zsl_unseen_1 = eval_dict["zsl_unseen_1"]
-                # zsl_unseen_2 = eval_dict["zsl_unseen_2"]
-                # gzsl_unseen = gzsl_eval_dict["zsl_unseen_2"]
+
 
                 open_set_acc = eval_dict["open_set"]
                 open_set_dict = eval_dict["open_set_dict"]
-                # os_FPR = open_set_dict["FPR"]
-                # os_TPR = open_set_dict["TPR"]
-                # os_TNR = open_set_dict["TNR"]
-                # os_FNR = open_set_dict["FNR"]
+
                 os_precision = open_set_dict["precision"]
                 os_recall = open_set_dict["recall"]
                 os_fscore = open_set_dict["fscore"]
@@ -131,31 +132,16 @@ def train_entry(config, dataloader, text, model, optimizer, lr_scheduler, device
                 gzsl_u = eval_dict["gzsl_dict"]["U"].detach().cpu().numpy()
                 gzsl_h = eval_dict["gzsl_dict"]["H"].detach().cpu().numpy()
 
-                # gzsl_no_open_s = gzsl_eval_dict["gzsl_dict"]["S"].detach().cpu().numpy()
-                # gzsl_no_open_u = gzsl_eval_dict["gzsl_dict"]["U"].detach().cpu().numpy()
-                # gzsl_no_open_h = gzsl_eval_dict["gzsl_dict"]["H"].detach().cpu().numpy()
-
-                # print(f"Epoch: {epoch}, avg_recall:{eval_dict['avg_recall']}, avg_prec:{eval_dict['avg_precision']}, avg_f1:{eval_dict['avg_f1']}")
-                # logging.info(f"Epoch: {epoch}, avg_recall:{eval_dict['avg_recall']}, avg_prec:{eval_dict['avg_precision']}, avg_f1:{eval_dict['avg_f1']}")
 
                 open_set_df.loc[len(open_set_df)] = [epoch, open_set_acc.detach().cpu().numpy(), 0, 0, 0, 0, os_precision, os_recall, os_fscore]
-                # metrics_df.loc[len(metrics_df)] = [epoch, eval_dict['avg_recall'], eval_dict['avg_precision'], eval_dict['avg_f1'], zsl_unseen_2.detach().cpu().numpy()]
-                # no_open_metrics_df.loc[len(no_open_metrics_df)] = [epoch, gzsl_eval_dict['avg_recall'], gzsl_eval_dict['avg_precision'], gzsl_eval_dict['avg_f1'],
-                #                                                    gzsl_unseen.detach().cpu().numpy()]
 
                 gzsl_metrics_df.loc[len(gzsl_metrics_df)] = [gzsl_s, gzsl_u, gzsl_h]
-                # gzsl_no_open_metrics_df.loc[len(gzsl_no_open_metrics_df)] = [gzsl_no_open_s, gzsl_no_open_u, gzsl_no_open_h]
 
                 if open_set_acc > best_open_acc:
                     best_open_acc = open_set_acc
                     print(f"Epoch: {epoch}, Best Open Set Acc: {best_open_acc}")
                     logging.info(f"Epoch: {epoch}, Best Open Set Acc: {best_open_acc}")
 
-                # sum_acc = metric_seen_acc + metric_unseen_acc
-                # if zsl_unseen_1 > best_unseen_acc_1:
-                #     best_unseen_acc_1 = zsl_unseen_1
-                #     print(f"Epoch: {epoch}, Best Unseen Acc (select): {best_unseen_acc_1}")
-                #     logging.info(f"Epoch: {epoch}, Best Unseen Acc (select): {best_unseen_acc_1}")
 
                 if gzsl_h > best_H:
                     best_H = gzsl_h
@@ -165,10 +151,6 @@ def train_entry(config, dataloader, text, model, optimizer, lr_scheduler, device
                     best_epoch = epoch
                     best_iteration = iteration
 
-                    # save_best_checkpoint_epoch(save_dict, is_best=True, gap=1,
-                    #                      filename=os.path.join(config["model_path"],
-                    #                                            'checkpoint_epoch%d.pth.tar' % epoch),
-                    #                      keep_all=True)
                     if config["baseline_args"]["ablation"] == "nol":
                         print("saving noL checkpoint")
                         state_dict = model.state_dict()
