@@ -21,6 +21,7 @@ import ruamel.yaml as yaml
 
 import data_utils.datasets_entry
 import train
+import test_entry
 import pandas as pd
 from data_utils.extract_raw_data import extract_raw_func, read_text_file
 
@@ -273,15 +274,17 @@ def main(args):
 
     print('======> start training {}, use {}.'.format(dataset_name, device))
 
-    # if args.test_model_path is not None:
-    #     config["args"]["test_model_path"] = args.test_model_path
-    #     config["args"]["spe_path"] = None
-    #     if args.p_encoder is not None:
-    #         print("===> Enable Specialist Model")
-    #         config["args"]["spe_path"] = args.p_encoder
-    #     input_loader = [trnloader, val_tune_loader, val_mix_loader]
-    #     test_train_val.test_CLIPrompt(config, input_loader, text_single, model, device)
-    #     return
+    # *************** model testing (with backup data and models) *************** #
+    if args.test_model_path is not None and use_back_up is not None:
+        config["args"]["test_model_path"] = args.test_model_path
+        config["args"]["spe_path"] = None
+        input_loader = [trnloader, val_tune_loader, val_mix_loader]
+        #     if args.spe_model_path is not None:
+        #         print("===> Enable Specialist Model")
+        #         config["args"]["spe_path"] = args.spe_model_path
+        test_entry.test_entry(config, input_loader, text_single, model, device)
+        return
+
 
     input_loader = [trnloader, val_tune_loader, val_mix_loader]
     if config["dataset_args"]["fake"] == True:
@@ -299,6 +302,7 @@ if __name__ == "__main__":
     parser.add_argument('--back_up_path', type=str, default=None)
     parser.add_argument('--test_on', type=bool, default=False)
     parser.add_argument('--test_model_path', type=str, default=None)
+    # parser.add_argument('--spe_model_path', type=str, default=None)
 
     args = parser.parse_args()
     main(args)
