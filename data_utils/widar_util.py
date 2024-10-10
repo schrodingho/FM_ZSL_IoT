@@ -122,8 +122,8 @@ def gen_widar_processed(dataset_dir='/home/dingding/PycharmProjects/WiFi-CSI-Sen
     # print(all_y.shape)
 
 
-    np.save('./data_utils/widar_data.npy', all_x)
-    np.save('./data_utils/widar_label.npy', all_y)
+    np.save('./data_cache/widar_data.npy', all_x)
+    np.save('./data_cache/widar_label.npy', all_y)
 
 
 def gen_widar_raw(dataset_dir='/home/dingding/Datasets/widar_3_0/BVP', WINDOW_SIZE=128, OVERLAP_RATE=0.1):
@@ -220,8 +220,8 @@ def gen_widar_raw(dataset_dir='/home/dingding/Datasets/widar_3_0/BVP', WINDOW_SI
     all_x = z_score_standard_single(all_x)
     print(all_x.shape)
     print(all_y.shape)
-    np.save('./data_utils/widar_data.npy', all_x)
-    np.save('./data_utils/widar_label.npy', all_y)
+    np.save('./data_cache/widar_data.npy', all_x)
+    np.save('./data_cache/widar_label.npy', all_y)
 
 if __name__ == '__main__':
     # gen_widar_processed()

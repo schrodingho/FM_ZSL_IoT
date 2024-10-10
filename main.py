@@ -81,7 +81,7 @@ def main(args):
         val_seen_meta = dill.load(open(f"{current_log}/val_seen_meta.pkl", "rb"))
         val_unseen_meta = dill.load(open(f"{current_log}/val_unseen_meta.pkl", "rb"))
 
-        all_data = np.load(open(f"data_utils/{dataset_name}_data.npy", "rb"))
+        all_data = np.load(open(f"data_cache/{dataset_name}_data.npy", "rb"))
         data_shape = all_data.shape
         config["dataset_args"]["train_shape"] = data_shape
 
@@ -123,7 +123,7 @@ def main(args):
         val_unseen_meta = dill.load(open(f"{use_back_up}/val_unseen_meta.pkl", "rb"))
         val_mix_meta = dill.load(open(f"{use_back_up}/mix_val_meta.pkl", "rb"))
 
-        all_data = np.load(open(f"data_utils/{dataset_name}_data.npy", "rb"))
+        all_data = np.load(open(f"data_cache/{dataset_name}_data.npy", "rb"))
         data_shape = all_data.shape
         config["dataset_args"]["train_shape"] = data_shape
 
@@ -178,7 +178,6 @@ def main(args):
 
     # TODO: solving data loading problems (from different folder)
     # *************** initialize dataloaders ***************#
-    # TODO: stop at here (7.9)
     if dataset_name == "USC":
         if config["dataset_args"]["fake"] == True:
             [trn_dataset, val_tune_dataset, val_mix_dataset,

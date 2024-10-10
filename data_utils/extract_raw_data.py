@@ -122,10 +122,10 @@ if __name__ == '__main__':
     }
     dataset_name = config["dataset_args"]["dataset"]
     if config["dataset_args"]["dataset"] == "USC":
-        tmp_path = "./data_utils/all_data.pkl"
+        tmp_path = "./data_cache/all_data.pkl"
         all_data = dill.load(open(tmp_path, "rb"))
     elif config["dataset_args"]["dataset"] == "pamap":
-        tmp_path = "./data_utils/pamap2_data.npy"
+        tmp_path = "./data_cache/pamap2_data.npy"
         all_data = np.load(tmp_path)
     train_meta = dill.load(open(meta_path + "/train_meta.pkl", "rb"))
     tst_seen_meta = dill.load(open(meta_path + "/val_seen_meta.pkl", "rb"))

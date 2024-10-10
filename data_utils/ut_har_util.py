@@ -45,8 +45,8 @@ def UT_HAR_dataset(dataset_dir="/home/dingding/WiFiProject/WiFi-CSI-Sensing-Benc
 
     print(f"UT_HAR dataset shape: {all_x.shape}, {all_y.shape}")
 
-    np.save('./data_utils/uthar_data.npy', all_x)
-    np.save('./data_utils/uthar_label.npy', all_y)
+    np.save('./data_cache/uthar_data.npy', all_x)
+    np.save('./data_cache/uthar_label.npy', all_y)
 
 
 

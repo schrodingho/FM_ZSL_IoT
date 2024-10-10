@@ -8,7 +8,7 @@ sys.path.append('../')
 from data_utils.base import *
 import pandas as pd
 def load_act_label():
-    act_label_path = "./data_utils/MMFi_act.csv"
+    act_label_path = "./data_cache/MMFi_act.csv"
     act_df = pd.read_csv(act_label_path, sep="\t")
     # print(act_label)
     # Build the dictionary between activity and description
@@ -52,8 +52,8 @@ def gen_mmwave(dataset_dir='/home/dingding/Datasets/filtered_mmwave/data/E04', W
     all_x = z_score_standard_single(all_x)
 
 
-    np.save('./data_utils/mmwave_data.npy', all_x)
-    np.save('./data_utils/mmwave_label.npy', all_y)
+    np.save('./data_cache/mmwave_data.npy', all_x)
+    np.save('./data_cache/mmwave_label.npy', all_y)
 
 
 def gen_mmwave_method_2():

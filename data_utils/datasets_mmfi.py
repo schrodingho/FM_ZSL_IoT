@@ -12,7 +12,7 @@ from data_utils.gpt_aug import mmwave_GPT_AUG
 static_unknown_text = "Unknown action"
 
 def load_act_label():
-    act_label_path = "./data_utils/MMFi_act.csv"
+    act_label_path = "./data_cache/MMFi_act.csv"
     act_df = pd.read_csv(act_label_path, sep="\t")
     # print(act_label)
     # Build the dictionary between activity and description

@@ -174,8 +174,8 @@ def gen_PAMAP_data(dataset_dir='./PAMAP2_Dataset/Protocol', WINDOW_SIZE=171, OVE
     print('all_data shape: %s\nall_label shape: %s' % (
     all_data.shape, all_label.shape))
 
-    np.save('./data_utils/pamap_data.npy', all_data)
-    np.save('./data_utils/pamap_label.npy', all_label)
+    np.save('./data_cache/pamap_data.npy', all_data)
+    np.save('./data_cache/pamap_label.npy', all_label)
 
 
 loc = [1] + [*range(4, 16)] + [*range(21, 33)] + [*range(38, 50)]
@@ -215,8 +215,8 @@ def gen_PAMAP_data2(dataset_dir, window_size, step):
     X = z_score_standard_single(X)
 
     print(f"PAMAP2 data shape: {X.shape}, label shape: {Y.shape}")
-    np.save('./data_utils/pamap_data.npy', X)
-    np.save('./data_utils/pamap_label.npy', Y)
+    np.save('./data_cache/pamap_data.npy', X)
+    np.save('./data_cache/pamap_label.npy', Y)
 
 
 

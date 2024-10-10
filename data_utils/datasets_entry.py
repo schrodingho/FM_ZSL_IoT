@@ -48,14 +48,14 @@ def meta_generate(configs):
 
     if configs["dataset_args"]["dataset"] == "pamap":
         # if data not exist
-        if not os.path.exists("data_utils/pamap_data.npy"):
+        if not os.path.exists("data_cache/pamap_data.npy"):
             # gen_PAMAP_data2(dataset_dir=configs["dataset_args"]["dataset_path"], window_size=80, step=20)
 
             gen_PAMAP_data(dataset_dir=configs["dataset_args"]["dataset_path"], WINDOW_SIZE=171, OVERLAP_RATE=0.1, SPLIT_RATE=(8, 2),
                            VALIDATION_SUBJECTS={105}, Z_SCORE=True)
 
-        all_data = np.load("data_utils/pamap_data.npy")
-        all_label = np.load("data_utils/pamap_label.npy")
+        all_data = np.load("data_cache/pamap_data.npy")
+        all_label = np.load("data_cache/pamap_label.npy")
         action_idx_dict = PAMAP_dict()
 
         PAMAP_process = data_utils.datasets_imu.general_meta_build(configs, all_data, all_label, configs["dataset_args"]["dataset"], log_dir)
@@ -70,12 +70,12 @@ def meta_generate(configs):
 
 
     if configs["dataset_args"]["dataset"] == "USC":
-        if not os.path.exists(f'data_utils/USC_data.npy'):
+        if not os.path.exists(f'data_cache/USC_data.npy'):
             # result = merge(configs["dataset_args"]["dataset_path"], 512, 256)
             gen_USC_data(configs, window_size=128, stride=64)
 
-        all_data = np.load("data_utils/USC_data.npy")
-        all_label = np.load("data_utils/USC_label.npy")
+        all_data = np.load("data_cache/USC_data.npy")
+        all_label = np.load("data_cache/USC_label.npy")
 
         action_idx_dict = data_utils.datasets_imu.USC_HAD_dict()
         print("All classes of USC_HAD: ", action_idx_dict)
@@ -93,12 +93,12 @@ def meta_generate(configs):
     elif configs["dataset_args"]["dataset"] == "mmwave":
         ########## new implementation for mmwave ##########
 
-        if not os.path.exists("data_utils/mmwave_data.npy"):
+        if not os.path.exists("data_cache/mmwave_data.npy"):
             gen_mmwave(dataset_dir=configs["dataset_args"]["dataset_path"], WINDOW_SIZE=100, OVERLAP_RATE=0.1)
             # gen_mmwave(dataset_dir=configs["dataset_args"]["dataset_path"], WINDOW_SIZE=512, OVERLAP_RATE=0.5)
 
-        all_data = np.load("data_utils/mmwave_data.npy")
-        all_label = np.load("data_utils/mmwave_label.npy")
+        all_data = np.load("data_cache/mmwave_data.npy")
+        all_label = np.load("data_cache/mmwave_label.npy")
         action_idx_dict = load_act_label()
         # mmfi_meta_builder = data_utils.datasets_mmfi.general_meta_build(configs, configs["dataset_args"]["dataset"], log_dir)
 
@@ -112,13 +112,13 @@ def meta_generate(configs):
             seen_num = int(configs["dataset_args"]["seen_num"])
             mmwave_process.meta_building_no_unknown(seen_num=seen_num)
     elif configs["dataset_args"]["dataset"] == "wifi":
-        if not os.path.exists("data_utils/wifi_data.npy"):
+        if not os.path.exists("data_cache/wifi_data.npy"):
             # gen_wifi(dataset_dir=configs["dataset_args"]["dataset_path"], WINDOW_SIZE=40, OVERLAP_RATE=0.1)
             # gen_mmwave(dataset_dir=configs["dataset_args"]["dataset_path"], WINDOW_SIZE=512, OVERLAP_RATE=0.5)
             gen_wifi2(dataset_dir=configs["dataset_args"]["dataset_path"], WINDOW_SIZE=60, OVERLAP_RATE=0.1)
 
-        all_data = np.load("data_utils/wifi_data.npy")
-        all_label = np.load("data_utils/wifi_label.npy")
+        all_data = np.load("data_cache/wifi_data.npy")
+        all_label = np.load("data_cache/wifi_label.npy")
         action_idx_dict = load_act_label()
         # mmfi_meta_builder = data_utils.datasets_mmfi.general_meta_build(configs, configs["dataset_args"]["dataset"], log_dir)
 
@@ -132,12 +132,12 @@ def meta_generate(configs):
             seen_num = int(configs["dataset_args"]["seen_num"])
             mmwave_process.meta_building_no_unknown(seen_num=seen_num)
     elif configs["dataset_args"]["dataset"] == "widar":
-        if not os.path.exists("data_utils/widar_data.npy"):
+        if not os.path.exists("data_cache/widar_data.npy"):
             # gen_widar_processed(dataset_dir=configs["dataset_args"]["dataset_path"], WINDOW_SIZE=1024, OVERLAP_RATE=0.1)
             gen_widar_raw(dataset_dir=configs["dataset_args"]["dataset_path"], WINDOW_SIZE=128, OVERLAP_RATE=0.1)
 
-        all_data = np.load("data_utils/widar_data.npy")
-        all_label = np.load("data_utils/widar_label.npy")
+        all_data = np.load("data_cache/widar_data.npy")
+        all_label = np.load("data_cache/widar_label.npy")
         action_idx_dict = load_widar_act_label()
 
         widar_process = data_utils.datasets_imu.general_meta_build(configs, all_data, all_label, configs["dataset_args"]["dataset"], log_dir)
@@ -149,12 +149,12 @@ def meta_generate(configs):
             seen_num = int(configs["dataset_args"]["seen_num"])
             widar_process.meta_building_no_unknown(seen_num=seen_num)
     elif configs["dataset_args"]["dataset"] == "lidar":
-        if not os.path.exists("data_utils/lidar_data.npy"):
+        if not os.path.exists("data_cache/lidar_data.npy"):
             # gen_widar_processed(dataset_dir=configs["dataset_args"]["dataset_path"], WINDOW_SIZE=1024, OVERLAP_RATE=0.1)
             gen_lidar(dataset_dir=configs["dataset_args"]["dataset_path"], WINDOW_SIZE=2048, OVERLAP_RATE=0.1)
 
-        all_data = np.load("data_utils/lidar_data.npy")
-        all_label = np.load("data_utils/lidar_label.npy")
+        all_data = np.load("data_cache/lidar_data.npy")
+        all_label = np.load("data_cache/lidar_label.npy")
         action_idx_dict = load_widar_act_label()
 
         lidar_process = data_utils.datasets_imu.general_meta_build(configs, all_data, all_label, configs["dataset_args"]["dataset"], log_dir)
@@ -166,12 +166,12 @@ def meta_generate(configs):
             seen_num = int(configs["dataset_args"]["seen_num"])
             lidar_process.meta_building_no_unknown(seen_num=seen_num)
     elif configs["dataset_args"]["dataset"] == "uthar":
-        if not os.path.exists("data_utils/uthar_data.npy"):
+        if not os.path.exists("data_cache/uthar_data.npy"):
             # gen_widar_processed(dataset_dir=configs["dataset_args"]["dataset_path"], WINDOW_SIZE=1024, OVERLAP_RATE=0.1)
             UT_HAR_dataset(dataset_dir=configs["dataset_args"]["dataset_path"], WINDOW_SIZE=50, OVERLAP_RATE=0.1)
 
-        all_data = np.load("data_utils/uthar_data.npy")
-        all_label = np.load("data_utils/uthar_label.npy")
+        all_data = np.load("data_cache/uthar_data.npy")
+        all_label = np.load("data_cache/uthar_label.npy")
         action_idx_dict = load_act_label_ut_har()
 
         uthar_process = data_utils.datasets_imu.general_meta_build(configs, all_data, all_label, configs["dataset_args"]["dataset"], log_dir)
