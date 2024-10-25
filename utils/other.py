@@ -49,6 +49,9 @@ def save_best_checkpoint(state, is_best=0, gap=1, filename='checkpoint.pth.tar',
 def save_unseen_best(state, filename='checkpoint.pth.tar'):
     torch.save(state, os.path.join(os.path.dirname(filename), 'model_best.pth.tar'))
 
+def save_local_best(state, path):
+    torch.save(state, os.path.join(os.path.dirname(path), 'local_model_best.pth.tar'))
+
 def save_best_checkpoint_epoch(state, is_best=0, gap=1, filename='checkpoint.pth.tar', keep_all=False):
     if is_best:
         past_best = glob(os.path.join(os.path.dirname(filename), 'model_best_*.pth.tar'))

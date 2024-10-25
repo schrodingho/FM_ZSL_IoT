@@ -2,21 +2,17 @@ import torch
 from utils.open_set import val_parameter_define
 from utils.validations import mix_validation
 from utils.train_utils import extract_trn_feat
+from utils.sup_model import SupModel
 
 import warnings
 warnings.filterwarnings("ignore")
-
 
 def test_entry(config, dataloader, text, model, device):
     # *************** setup ***************#
     trnloader, val_tune_loader, val_mix_loader = dataloader
     epoch = 0
-    epochs = config["args"]["epochs"]
     open_set_df = config["args"]["open_set_df"]
-    metrics_df = config["args"]["metrics_df"]
-    no_open_metrics_df = config["args"]["no_open_metrics_df"]
     gzsl_metrics_df = config["args"]["gzsl_metrics_df"]
-    gzsl_no_open_metrics_df = config["args"]["gzsl_no_open_metrics_df"]
 
     # *************** load model ***************#
     checkpoint_path = config["args"]["test_model_path"]
@@ -24,12 +20,12 @@ def test_entry(config, dataloader, text, model, device):
     specialist_model = None
 
     # TODO: add specialist model loader
-    # if config["args"]["spe_path"] is not None:
-    #     print("Specialist model is loaded")
-    #     specialist_model = SupModel(config, device)
-    #     specialist_model_path = config["args"]["spe_path"]
-    #     specialist_model.load_state_dict(torch.load(specialist_model_path)['state_dict'])
-    #     specialist_model.to(device)
+    if config["args"]["local_model_path"] is not None:
+        print("Local specialist model is loaded")
+        specialist_model = SupModel(config, device)
+        specialist_model_path = config["args"]["local_model_path"]
+        specialist_model.load_state_dict(torch.load(specialist_model_path)['state_dict'])
+        specialist_model.to(device)
 
     model.eval()
     model.clipmodel.eval()
@@ -42,7 +38,7 @@ def test_entry(config, dataloader, text, model, device):
         auto_knn_params = None
 
     eval_dict, val_feat_pack = mix_validation(config, epoch, val_mix_loader, text, model, known_trn_vFeatures,
-                                              known_trn_targets, device, auto_knn_params)
+                                              known_trn_targets, device, auto_knn_params, special_model=specialist_model)
     # [val_vFeatures, val_targets, val_vis_lists, pos_tFeature, neg_tFeature, gzsl_eval_dict] = val_feat_pack
 
     open_set_acc = eval_dict["open_set"]

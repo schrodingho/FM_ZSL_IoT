@@ -119,8 +119,6 @@ def train_entry(config, dataloader, text, model, optimizer, lr_scheduler, device
                 eval_dict, val_feat_pack = mix_validation(config, epoch, val_mix_loader, text, model, known_trn_vFeatures, known_trn_targets, device, auto_knn_params)
                 [val_vFeatures, val_targets, val_vis_lists, pos_tFeature, neg_tFeature, gzsl_eval_dict] = val_feat_pack
 
-
-
                 open_set_acc = eval_dict["open_set"]
                 open_set_dict = eval_dict["open_set_dict"]
 
@@ -132,16 +130,13 @@ def train_entry(config, dataloader, text, model, optimizer, lr_scheduler, device
                 gzsl_u = eval_dict["gzsl_dict"]["U"].detach().cpu().numpy()
                 gzsl_h = eval_dict["gzsl_dict"]["H"].detach().cpu().numpy()
 
-
                 open_set_df.loc[len(open_set_df)] = [epoch, open_set_acc.detach().cpu().numpy(), 0, 0, 0, 0, os_precision, os_recall, os_fscore]
-
                 gzsl_metrics_df.loc[len(gzsl_metrics_df)] = [gzsl_s, gzsl_u, gzsl_h]
 
                 if open_set_acc > best_open_acc:
                     best_open_acc = open_set_acc
                     print(f"Epoch: {epoch}, Best Open Set Acc: {best_open_acc}")
                     logging.info(f"Epoch: {epoch}, Best Open Set Acc: {best_open_acc}")
-
 
                 if gzsl_h > best_H:
                     best_H = gzsl_h
