@@ -21,9 +21,6 @@ args:
 dataset_args:
   dataset: "mmwave"
   dataset_path: "/home/dinghao/Dataset/filtered_mmwave"
-  # /home/dingding/Datasets/filtered_mmwave/data
-  # /home/dinghao/Dataset/filtered_mmwave
-  # "/home/dxue/data/storage/Datasets/filtered_mmwave/E04"
   type: "mmwave"
   raw_structure: False
   select_env: ["E04"]

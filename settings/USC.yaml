@@ -21,13 +21,8 @@ args:
 dataset_args:
   dataset: "USC"
   dataset_path: "/home/dingding/Datasets/USC-HAD/"
-  # /home/dinghao/Dataset/USC-HAD
-  # /home/dingding/Datasets/USC-HAD/
   type: "imu"
   backup:
-# "/home/dingding/PycharmProjects/Efficient-Prompt/logs_USC/logdir_20240409-111317"
-# '/home/dingding/PycharmProjects/Efficient-Prompt/logs_USC/logdir_20240408-182148/'
-# "/home/dingding/PycharmProjects/Efficient-Prompt/logs_USC/logdir_20240406-104951"
   fake: False
   unknown: False
   num_all_classes: 12

@@ -21,8 +21,6 @@ args:
 dataset_args:
   dataset: "pamap"
   dataset_path: "/home/dinghao/Dataset/PAMAP2_Dataset/Protocol"
-  # /home/dinghao/Dataset/PAMAP2_Dataset/Protocol
-  # /home/dingding/Datasets/PAMAP2_Dataset/Protocol/
   type: "imu"
   backup:
   fake: False

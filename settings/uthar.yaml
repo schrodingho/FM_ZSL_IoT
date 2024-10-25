@@ -20,9 +20,7 @@ args:
 
 dataset_args:
   dataset: "uthar"
-  dataset_path: "/home/dinghao/Dataset/UT_HAR"
-  # /home/dinghao/Dataset/UT_HAR
-  # /home/dingding/WiFiProject/WiFi-CSI-Sensing-Benchmark/Data/UT_HAR
+  dataset_path: "/home/to_your_path"
   type: "uthar"
   raw_structure: False
   select_env: ["E04"]

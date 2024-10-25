@@ -20,12 +20,7 @@ args:
 
 dataset_args:
   dataset: "widar"
-  dataset_path: "/home/dingding/PycharmProjects/WiFi-CSI-Sensing-Benchmark/Data/Widardata/train"
-  # /home/dingding/Datasets/filtered_mmwave/data
-  # /home/dinghao/Dataset/filtered_mmwave
-  # "/home/dxue/data/storage/Datasets/filtered_mmwave/E04"
-  # /home/dingding/PycharmProjects/WiFi-CSI-Sensing-Benchmark/Data/Widardata/test
-  # /home/dinghao/Projects/WiFi-CSI-Sensing-Benchmark/Data/Widardata/all_data
+  dataset_path: "/home/to_your_path"
   type: "widar"
   raw_structure: False
   select_env: ["E04"]

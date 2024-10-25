@@ -21,11 +21,6 @@ args:
 dataset_args:
   dataset: "wifi"
   dataset_path: "/home/dinghao/Dataset/select_wifi/E04"
-  # /home/dinghao/Dataset/select_wifi/E04
-  # /home/dingding/Datasets/mmfi_wifi/E04
-  # /home/dingding/Datasets/filtered_mmwave/data
-  # /home/dinghao/Dataset/filtered_mmwave
-  # "/home/dxue/data/storage/Datasets/filtered_mmwave/E04"
   type: "wifi"
   raw_structure: False
   select_env: ["E04"]
