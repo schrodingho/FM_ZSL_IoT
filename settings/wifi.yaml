@@ -1,0 +1,81 @@
+args:
+  seed: 0
+  epochs: 20
+  workers: 8
+  batchsize: 64
+  backbone: "ViT-B/16"
+  decay_steps: 2e5
+  lr: 1e-3
+  test: False
+  return_intermediate_text_features: 0
+  numFrames:
+  temporal:
+  prefix: 4
+  postfix: 4
+  tfm_layers: 1
+  tfm_heads: 8
+  start_iter: 0
+  numContrast: 400
+  val_epoch: 0
+
+dataset_args:
+  dataset: "wifi"
+  dataset_path: "/home/dinghao/Dataset/select_wifi/E04"
+  type: "wifi"
+  raw_structure: False
+  select_env: ["E04"]
+  backup:
+  fake: False
+  unknown: False
+  num_all_classes: 27
+  unseen_num: 5
+  seen_num: 22
+  unknown_class: False
+  select_unseen:
+  all_classes: ['Stretching and relaxing', 'Chest expansion(horizontal)', 'Chest expansion (vertical)', 'Twist (left)', 'Twist (right)',
+ 'Mark time', 'Limb extension (left)', 'Limb extension (right)', 'Lunge (toward left-front)', 'Lunge (toward right-front)',
+ 'Limb extension (both)', 'Squat', 'Raising hand (left)', 'Raising hand (right)', 'Lunge (toward left side)', 'Lunge (toward right side)',
+ 'Waving hand (left)', 'Waving hand (right)', 'Picking up things', 'Throwing (toward left side)', 'Throwing (toward right side)',
+ 'Kicking (toward left side)', 'Kicking (toward right side)',
+ 'Body extension (left)', 'Body extension (right)', 'Jumping up', 'Bowing']
+  loo_split:
+  random_split:
+  pre_saved:
+  gpt_aug: False
+  original_text: False
+
+baseline_args:
+  baseline: 0
+  ablation:
+  noise_std: 0.5
+  mcm_percent: 0.80
+  loss:
+  model_path:
+  zsl_model_path:
+# loss: "simclr"
+# all baselines
+# 0 : original
+# supervised: sup
+# open-set: knn, mcm, vim
+# zsl: coop
+# ablation study: bert, meta
+
+open_set_args:
+  manual: False
+  knn_val: 400
+  knn_threshold: 0.4
+  cluster: True
+  knn_percent: 0.08
+  cluster_percent: 0.80
+  text: False
+
+#model_args:
+
+coop:
+  N_CTX: 16
+  CTX_INIT: ""
+  CSC: False
+  CLASS_TOKEN_POSITION: "end"
+
+
+

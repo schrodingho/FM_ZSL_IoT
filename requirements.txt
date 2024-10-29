@@ -1,0 +1,12 @@
+dill==0.3.7
+ftfy==6.3.1
+numpy==2.1.2
+pandas==2.2.3
+Pillow==11.0.0
+regex==2024.9.11
+ruamel.base==1.0.0
+scikit_learn==1.5.2
+scipy==1.14.1
+torch==2.4.1+cu124
+torchvision==0.19.1+cu124
+tqdm==4.66.5
