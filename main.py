@@ -49,7 +49,7 @@ def main(args):
     current_log = new_log_dir + "logdir_" + current_time
     if not os.path.exists(current_log):
         os.makedirs(current_log)
-    # TODO: figure out the usage of this parameter (change the name of this)
+    # TODO: ?
     config["model_path"] = current_log
 
     # meta_data generation
@@ -93,6 +93,10 @@ def main(args):
         merge_txt_files(seen_meta_list, unseen_meta_list, f"{current_log}/all_text.txt")
         all_meta_list = f"{current_log}/all_text.txt"
 
+        """
+        `val_mix_meta` is a combination of `val_seen_meta` and `val_unseen_meta`, 
+        the number of unseen equals the number of seen in the combination.        
+        """
         val_mix_meta = mix_val_data(val_seen_meta, val_unseen_meta, method=4)
         dill.dump(val_mix_meta, open(f"{current_log}/mix_val_meta.pkl", "wb"))
 
@@ -146,10 +150,9 @@ def main(args):
         if not os.path.exists(config["extract_raw_dir"]):
             os.makedirs(config["extract_raw_dir"])
 
-        #*************** testing entry ***************#
-        if args.test_on:
-            extract_raw_func(config, train_meta, val_seen_meta, val_unseen_meta, seen_meta_list, unseen_meta_list,
-                             all_data)
+        # if args.test_model_path is not None:
+        #     extract_raw_func(config, train_meta, val_seen_meta, val_unseen_meta, seen_meta_list, unseen_meta_list,
+        #                      all_data)
 
         #*************** data augmentation entry ***************#
         if config["dataset_args"]["fake"] == True:
@@ -250,7 +253,7 @@ def main(args):
     model = CLIPrompt(config, text_single, device)
 
     if config["dataset_args"]["fake"]:
-        if args.test_on:
+        if args.test_model_path is not None:
             print("run on multiple split models")
             model.load_state_dict(
                 torch.load(config["dataset_args"]["backup"] + f"/model_best.pth.tar")["state_dict"])
@@ -298,7 +301,7 @@ if __name__ == "__main__":
     parser.add_argument('--config_choose', type=str, default='USC',
                         choices=['USC', 'wifi', 'mmwave', 'pamap'])
     parser.add_argument('--back_up_path', type=str, default=None)
-    parser.add_argument('--test_on', type=bool, default=False)
+    # parser.add_argument('--test_on', type=bool, default=False)
     parser.add_argument('--test_model_path', type=str, default=None)
     parser.add_argument('--local_model_path', type=str, default=None)
 

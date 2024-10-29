@@ -139,11 +139,6 @@ def main(args):
         if not os.path.exists(config["extract_raw_dir"]):
             os.makedirs(config["extract_raw_dir"])
 
-        #*************** testing entry ***************#
-        if args.test_on:
-            extract_raw_func(config, train_meta, val_seen_meta, val_unseen_meta, seen_meta_list, unseen_meta_list,
-                             all_data)
-
         #*************** data augmentation entry ***************#
         if config["dataset_args"]["fake"] == True:
             extract_raw = f"{current_log}/extracted_raw"
@@ -239,7 +234,6 @@ if __name__ == "__main__":
     parser.add_argument('--config_choose', type=str, default='pamap',
                         choices=['USC', 'wifi', 'mmwave', 'pamap'])
     parser.add_argument('--back_up_path', type=str, default=None)
-    parser.add_argument('--test_on', type=bool, default=False)
 
     args = parser.parse_args()
     main(args)
