@@ -53,4 +53,3 @@ python main.py --config_choose <dataset_config> --back_up_path <path_to_saved_lo
 - [Efficient-Prompt](https://github.com/ju-chen/Efficient-Prompt)
 - [SupContrast](https://github.com/HobbitLong/SupContrast)
 - [HAR-Dataset-Preprocess](https://github.com/xushige/HAR-Dataset-Preprocess)
-
