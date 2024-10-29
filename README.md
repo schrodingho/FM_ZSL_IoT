@@ -1,6 +1,5 @@
 # Leveraging Foundation Models for Zero-Shot IoT Sensing
-
-[//]: # ([![]&#40;https://img.shields.io/badge/ECAI-2024-green?style=flat&#41;]&#40;https://www.ecai2024.eu/programme/accepted-papers#:~:text=and%20Odile%20Papini-,M939,-Leveraging%20Foundation%20Models&#41; )
+[![](https://img.shields.io/badge/LICENSE-MIT-blue?style=flat)](https://github.com/schrodingho/FM_ZSL_IoT/blob/main/LICENSE) 
 [![](https://img.shields.io/badge/ECAI-2024-purple?style=flat)](https://www.ecai2024.eu/calls/main-track) 
 [![](https://img.shields.io/badge/arXiv:2407.19893-red?style=flat)](https://arxiv.org/pdf/2407.19893)
 
