@@ -17,7 +17,7 @@ args:
   start_iter: 0
   numContrast: 400
   val_epoch: 0
-
+# Hi, sorry for the late response first. I have attached the `MMFi_act.csv` for you, it is actually the transformed markdown table from the [MMFi_dataset](https://github.com/ybhbingo/MMFi_dataset#:~:text=about%20MMFi%20Dataset-,Activities%20Included,-MMFi%20dataset%20constains). If you want to train model with mmWave dataset, you can set the `dataset_path` in `./settings/mmwave.yaml` as `your_path_to_dataset/filtered_mmwave/E0*` (for a specific environment), and I believe that the `MMFi_act.csv` is also not required for this process.
 dataset_args:
   dataset: "mmwave"
   dataset_path: "/home/dinghao/Dataset/filtered_mmwave"

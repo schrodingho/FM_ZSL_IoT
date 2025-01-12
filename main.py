@@ -49,7 +49,7 @@ def main(args):
     current_log = new_log_dir + "logdir_" + current_time
     if not os.path.exists(current_log):
         os.makedirs(current_log)
-    # TODO: ?
+
     config["model_path"] = current_log
 
     # meta_data generation
@@ -298,7 +298,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument('--config_choose', type=str, default='USC',
+    parser.add_argument('--config_choose', type=str, default='mmwave',
                         choices=['USC', 'wifi', 'mmwave', 'pamap'])
     parser.add_argument('--back_up_path', type=str, default=None)
     # parser.add_argument('--test_on', type=bool, default=False)

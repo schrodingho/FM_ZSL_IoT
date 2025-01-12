@@ -20,7 +20,7 @@ args:
 
 dataset_args:
   dataset: "USC"
-  dataset_path: "/home/dingding/Datasets/USC-HAD/"
+  dataset_path: "/home/to_your_path/USC-HAD/"
   type: "imu"
   backup:
   fake: False
@@ -30,39 +30,22 @@ dataset_args:
   seen_num: 9
   unknown_class: False
   select_unseen:
-# ['Standing', 'Walking Left', 'Walking Downstairs']
-#    best: ['Walking Forward', 'Elevator Down', 'Jumping Up']
-  # ['Walking Downstairs', 'Walking Upstairs', 'Walking Left']
   all_classes: ["Walking Forward", "Walking Left", "Walking Right", "Walking Upstairs", "Walking Downstairs",
      "Running Forward", "Jumping Up", "Sitting", "Standing", "Sleeping", "Elevator Up", "Elevator Down"]
   loo_split: True
   random_split:
   pre_saved:
-  # for gpt-aug baseline
   gpt_aug: False
   original_text: False
-# ['Walking Right', 'Elevator Up', 'Running Forward']
-# ['Jumping Up', 'Walking Downstairs', 'Sitting', 'Walking Right', 'Elevator Up', 'Walking Left',
-        #          'Running Forward', 'Sleeping', 'Elevator Down']
-  # ['Walking Forward', 'Standing', 'Walking Upstairs']
+
 baseline_args:
   baseline: 0
   ablation:
-  # "xprompt" "xopenset" "xaugmentation"
-  # "nol"
   noise_std: 0.5
   mcm_percent: 0.80
   loss:
   model_path:
   zsl_model_path:
-# zsl_model_path: "/home/dingding/PycharmProjects/Efficient-Prompt/logs_USC/logdir_b_vim_20240329-141752/model_best_epoch19.pth.tar"
-# loss: "simclr"
-# all baselines
-# 0 : original
-# supervised: sup
-# open-set: knn, mcm, vim
-# zsl: coop
-# ablation study: bert, meta, nol
 
 open_set_args:
   manual: False
