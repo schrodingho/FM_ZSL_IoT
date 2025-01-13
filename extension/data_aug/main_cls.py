@@ -2,12 +2,12 @@ import torch
 import argparse
 # Additional Scripts
 from train import TrainTestPipe
+
+import os
 from utils.AWADataset import clip_embedding
-import clip
 
 from config import cfg
 import dill
-import os
 import numpy as np
 
 parser = argparse.ArgumentParser()
@@ -20,8 +20,6 @@ parser.add_argument('--g_fake_attr_path', type=str, default=None)
 parser.add_argument('--g_fake_raw_path', type=str, default=None)
 parser.add_argument('--dataset', type=str, default="USC")
 parser.add_argument('--clip', type=int, default=1)
-parser.add_argument('--split', type=int, default=None)
-
 
 def main_pipeline(args):
     device = 'cpu:0'
@@ -89,7 +87,7 @@ def main_pipeline(args):
         if not os.path.exists(save_res_path):
             os.makedirs(save_res_path)
         metrics_df_get = ttp.metrics_df
-        metrics_df_get.to_csv(f"{save_res_path}/DCN_{args.dataset}_split_{args.split}.csv", index=False)
+        metrics_df_get.to_csv(f"{save_res_path}/DCN_{args.dataset}.csv", index=False)
 
         if args.g_fake_raw_path:
             path = args.g_fake_raw_path

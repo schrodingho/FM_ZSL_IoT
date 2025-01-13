@@ -1,10 +1,14 @@
- import torch
+import torch
 from torch.utils.data import Dataset
 import scipy.io as sio
 from sklearn import preprocessing
 import numpy as np
 # Additional Scripts
 from config import cfg
+import os
+import sys
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+
 import dill
 import clip
 
@@ -46,7 +50,8 @@ class MyDataset(Dataset):
     def __init__(self, set):
         super().__init__()
         path = cfg.mypath
-        trn_feat = torch.load(path + "trn_feat.pth").detach().cpu().numpy()
+        print()
+        trn_feat = torch.load(path + "/trn_feat.pth").detach().cpu().numpy()
         # normalize
         trn_feat = preprocessing.normalize(trn_feat, norm='l2')
         # to int

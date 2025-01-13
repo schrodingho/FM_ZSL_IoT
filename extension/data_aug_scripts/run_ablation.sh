@@ -1,9 +1,9 @@
 # all splits
-DATASET="wifi"
+DATASET="USC"
 baseline_arg=0
 test_on=True
 split_num=5
-ablation="_has_prompt_has_data_aug_1"
+ablation="_prompt_data_aug"
 # has_data_aug
 
 if [[ "$DATASET" == "USC" || "$DATASET" == "pamap" ]]; then
