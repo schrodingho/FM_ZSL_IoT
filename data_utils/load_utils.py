@@ -85,7 +85,7 @@ class USC_Dataset_fake(Dataset):
         self.data_list = meta_data["data_list"]
         self.all_data = torch.from_numpy(all_data).float().unsqueeze(1)
         self.config = config
-        self.fake_feat = torch.from_numpy(fake_dict["fake_feat"]).float()
+        self.fake_feat = torch.from_numpy(fake_dict["fake_feat"]).float().unsqueeze(1)
         if config["dataset_args"]["unknown"] == True:
             self.fake_targets = [int(config["dataset_args"]["seen_num"]) for _ in range(len(fake_dict["fake_targets"]))]
             self.fake_text = [static_unknown_text for _ in range(len(fake_dict["fake_targets"]))]
@@ -125,7 +125,6 @@ class USC_Dataset_fake(Dataset):
             x = self.all_data[data_idx]
 
             vis_type = self.data_list[idx]["vis"]
-
 
         return x, out_text, y, vis_type
 

@@ -20,7 +20,7 @@ args:
 
 dataset_args:
   dataset: "uthar"
-  dataset_path: "/home/to_your_path"
+  dataset_path: "/your_path"
   type: "uthar"
   raw_structure: False
   select_env: ["E04"]

@@ -20,7 +20,7 @@ args:
 
 dataset_args:
   dataset: "USC"
-  dataset_path: "/home/to_your_path/USC-HAD/"
+  dataset_path: "/your_path/USC-HAD/"
   type: "imu"
   backup:
   num_all_classes: 12

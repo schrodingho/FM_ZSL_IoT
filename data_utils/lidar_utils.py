@@ -20,7 +20,7 @@ def load_act_label():
 
     return act_idx_desp_dict
 
-def gen_lidar(dataset_dir='/home/dingding/Datasets/lidar_data/select_lidar/E04', WINDOW_SIZE=2048, OVERLAP_RATE=0.1):
+def gen_lidar(dataset_dir='/your_path', WINDOW_SIZE=2048, OVERLAP_RATE=0.1):
 
     all_x = []
     all_y = []

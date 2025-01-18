@@ -20,7 +20,7 @@ args:
 
 dataset_args:
   dataset: "wifi"
-  dataset_path: "/home/to_your_path/select_wifi/E04"
+  dataset_path: "/your_path/select_wifi/E04"
   type: "wifi"
   raw_structure: False
   select_env: ["E04"]

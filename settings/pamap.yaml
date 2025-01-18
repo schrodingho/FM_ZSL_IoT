@@ -20,7 +20,7 @@ args:
 
 dataset_args:
   dataset: "pamap"
-  dataset_path: "/home/to_your_path/PAMAP2_Dataset/Protocol"
+  dataset_path: "/your_path/PAMAP2_Dataset/Protocol"
   type: "imu"
   backup:
   fake: False

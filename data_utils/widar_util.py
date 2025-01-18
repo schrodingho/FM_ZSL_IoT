@@ -64,11 +64,11 @@ def load_widar_act_label():
 
     return action_small
 
-def list_all_dir_names(path="/home/dingding/PycharmProjects/WiFi-CSI-Sensing-Benchmark/Data/Widardata/test"):
+def list_all_dir_names(path="/your_path"):
     all_dirs = os.listdir(path)
     print(all_dirs)
 
-def gen_widar_processed(dataset_dir='/home/dingding/PycharmProjects/WiFi-CSI-Sensing-Benchmark/Data/Widardata/test', WINDOW_SIZE=1024, OVERLAP_RATE=0.1):
+def gen_widar_processed(dataset_dir='/your_path', WINDOW_SIZE=1024, OVERLAP_RATE=0.1):
     all_x = []
     all_y = []
     classes_list = os.listdir(dataset_dir)
@@ -126,7 +126,7 @@ def gen_widar_processed(dataset_dir='/home/dingding/PycharmProjects/WiFi-CSI-Sen
     np.save('./data_cache/widar_label.npy', all_y)
 
 
-def gen_widar_raw(dataset_dir='/home/dingding/Datasets/widar_3_0/BVP', WINDOW_SIZE=128, OVERLAP_RATE=0.1):
+def gen_widar_raw(dataset_dir='/your_path', WINDOW_SIZE=128, OVERLAP_RATE=0.1):
     src_path = dataset_dir
     link_path = "6-link"
 

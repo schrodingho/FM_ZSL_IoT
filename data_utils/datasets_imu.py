@@ -449,4 +449,4 @@ class general_meta_build:
 
 if __name__ == '__main__':
     # tmp1()
-    utd_dataset_path = "/home/dingding/Datasets/Inertial"
+    utd_dataset_path = "/your_path"

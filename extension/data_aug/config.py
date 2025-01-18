@@ -46,9 +46,3 @@ cfg.projection = EasyDict()
 cfg.projection.epoch = 30
 cfg.projection.learning_rate = 1e-4
 cfg.projection.model_name = 'projection_model_1e4.pt'
-
-
-# cfg.mypath = '/home/dingding/PycharmProjects/Efficient-Prompt/logs_USC/logdir_20240404-220106/extracted_generator/'
-# cfg.mypath = '/home/dingding/PycharmProjects/Efficient-Prompt/logs_USC/logdir_20240405-144935/extracted_generator/'
-# cfg.mypath = '/home/dingding/PycharmProjects/Efficient-Prompt/logs_USC/logdir_20240407-211928/extracted_raw/'
-# cfg.mypath = '/home/dingding/PycharmProjects/Efficient-Prompt/logs_pamap/logdir_20240407-225101/extracted_raw/'

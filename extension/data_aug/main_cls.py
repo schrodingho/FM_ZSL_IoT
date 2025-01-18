@@ -81,13 +81,8 @@ def main_pipeline(args):
         print('Projection training process has been started!')
         ttp.train_projection()
 
-        print('Test has been started!')
-        ttp.test()
-        save_res_path = "./clswagan_results"
-        if not os.path.exists(save_res_path):
-            os.makedirs(save_res_path)
-        metrics_df_get = ttp.metrics_df
-        metrics_df_get.to_csv(f"{save_res_path}/DCN_{args.dataset}.csv", index=False)
+        # print('Test has been started!')
+        # ttp.test()
 
         if args.g_fake_raw_path:
             path = args.g_fake_raw_path

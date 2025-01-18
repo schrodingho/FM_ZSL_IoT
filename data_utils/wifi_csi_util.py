@@ -22,7 +22,7 @@ def load_act_label():
 
     return act_idx_desp_dict
 
-def gen_wifi(dataset_dir='/home/dingding/Datasets/mmfi_wifi/E04', WINDOW_SIZE=1024, OVERLAP_RATE=0.1):
+def gen_wifi(dataset_dir='/your_path', WINDOW_SIZE=1024, OVERLAP_RATE=0.1):
 
     all_x = []
     all_y = []
@@ -73,7 +73,7 @@ def gen_wifi(dataset_dir='/home/dingding/Datasets/mmfi_wifi/E04', WINDOW_SIZE=10
     np.save('./data_cache/wifi_data.npy', all_x)
     np.save('./data_cache/wifi_label.npy', all_y)
 
-def gen_wifi2(dataset_dir='/home/dingding/Datasets/mmfi_wifi/E04', WINDOW_SIZE=1024, OVERLAP_RATE=0.1):
+def gen_wifi2(dataset_dir='/your_path', WINDOW_SIZE=1024, OVERLAP_RATE=0.1):
     all_x = []
     all_y = []
     length = []
