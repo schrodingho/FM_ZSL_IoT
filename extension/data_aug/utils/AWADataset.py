@@ -87,30 +87,14 @@ class MyDataset(Dataset):
         test_classes_unseen = unique_unseen_classes
         test_classes = np.concatenate((unique_seen_classes, unique_unseen_classes), axis=0)
 
-        if cfg.clip:
-            path = cfg.mypath
-            all_text_label_dict = dill.load(open(path + "all_text_label_dict.pkl", "rb"))
-            all_label_text_dict = {v: k for k, v in all_text_label_dict.items()}
-            # sort by value
-            all_text_label_dict = dict(sorted(all_text_label_dict.items(), key=lambda item: item[1]))
-            all_sentences = list(all_text_label_dict.keys())
-            sig = clip_embedding(all_sentences).detach().cpu().numpy()
-            # normalize
-            sig = preprocessing.normalize(sig, norm='l2')
-            sig = sig.T
-            trainval_sig = sig[:, trainval_classes_seen - 1]
-            train_sig = sig[:, train_classes - 1]
-            val_sig = sig[:, val_classes - 1]
-            test_sig = sig[:, test_classes - 1]  # Entire Signature Matrix
-        else:
-            path = cfg.mypath
-            sig = torch.load(path + "all_t_feat.pth").detach().cpu().numpy()
-            sig = preprocessing.normalize(sig, norm='l2')
-            sig = sig.T
-            trainval_sig = sig[:, trainval_classes_seen - 1]
-            train_sig = sig[:, train_classes - 1]
-            val_sig = sig[:, val_classes - 1]
-            test_sig = sig[:, test_classes - 1]  # Entire Signature Matrix
+        path = cfg.mypath
+        sig = torch.load(path + "all_t_feat.pth").detach().cpu().numpy()
+        sig = preprocessing.normalize(sig, norm='l2')
+        sig = sig.T
+        trainval_sig = sig[:, trainval_classes_seen - 1]
+        train_sig = sig[:, train_classes - 1]
+        val_sig = sig[:, val_classes - 1]
+        test_sig = sig[:, test_classes - 1]  # Entire Signature Matrix
 
         if set == "trainval_loc":
             self.features = torch.from_numpy(X_trainval_gzsl).float().T

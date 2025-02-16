@@ -1,10 +1,14 @@
+"""
+Code from:
+https://github.com/mkara44/f-clswgan_pytorch
+"""
+
 import torch
 import argparse
 # Additional Scripts
 from train import TrainTestPipe
 
 import os
-from utils.AWADataset import clip_embedding
 
 from config import cfg
 import dill
@@ -19,7 +23,6 @@ parser.add_argument('--projection_path', type=str, default=None)
 parser.add_argument('--g_fake_attr_path', type=str, default=None)
 parser.add_argument('--g_fake_raw_path', type=str, default=None)
 parser.add_argument('--dataset', type=str, default="USC")
-parser.add_argument('--clip', type=int, default=1)
 
 def main_pipeline(args):
     device = 'cpu:0'
@@ -48,14 +51,11 @@ def main_pipeline(args):
 
     if args.g_fake_raw_path:
         cfg.mypath = args.g_fake_raw_path
-        cfg.clip = args.clip
 
     if args.g_fake_attr_path:
         cfg.mypath = args.g_fake_attr_path
-        cfg.clip = args.clip
         cfg.x_dim = 1024
 
-    print("Raw CLIP is used: ", cfg.clip)
 
     if args.train:
         args.g_cls_path = 'g_cls_model_1e4.pt'
@@ -122,14 +122,8 @@ def generate_fake_raw_data(cur_parser, path, ttp):
     each_class_num = (len(trn_targets) // seen_num)
     all_text_label_dict = dill.load(open(path + "all_text_label_dict.pkl", "rb"))
     all_label_text_dict = {v: k for k, v in all_text_label_dict.items()}
-    if cfg.clip:
-        # all_text_label_dict = dill.load(open(path + "all_text_label_dict.pkl", "rb"))
-        # all_label_text_dict = {v: k for k, v in all_text_label_dict.items()}
-        all_sentences = list(all_text_label_dict.keys())
-        unseen_sentences = all_sentences[seen_num:]
-        unseen_text_emb_feat = clip_embedding(unseen_sentences)
-    else:
-        unseen_text_emb_feat = torch.load(path + "unseen_t_feat.pth")
+
+    unseen_text_emb_feat = torch.load(path + "unseen_t_feat.pth")
     index_list = [i for i in range(unseen_num)]
     index_tensor = torch.tensor(index_list).repeat(each_class_num)
 

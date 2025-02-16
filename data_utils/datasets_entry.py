@@ -14,17 +14,21 @@ from data_utils.ut_har_util import UT_HAR_dataset, load_act_label_ut_har
 from data_utils.usc_had_util import gen_USC_data
 
 def window(data, size, stride):
-    '''将数组data按照滑窗尺寸size和stride进行切割'''
+    '''
+    save the data array into a list of arrays with the size of size and stride of stride
+    '''
+
     x = []
     for i in range(0, data.shape[0], stride):
-        if i+size <= data.shape[0]: #不足一个滑窗大小的数据丢
+        if i+size <= data.shape[0]:
                 x.append(data[i: i + size])
     return x
 
 def merge(path, size, stride):
-    '''合并数据
-    path: USC-HAD路径'''
-    result = [[] for i in range(12)]    #result的索引就是对应的动作标签
+    '''
+    combine the data from all subjects
+    '''
+    result = [[] for i in range(12)]
 
     # list all folders
     subject_list = os.listdir(path)

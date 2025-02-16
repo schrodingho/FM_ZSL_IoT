@@ -187,7 +187,6 @@ def main(args):
     logging.info("seen_set: {}".format(list(train_meta["label_text_dict"].keys())))
     logging.info("val_seen_set: {}".format(list(val_unseen_meta["label_text_dict"].keys())))
 
-    # TODO: solving data loading problems (from different folder)
     # *************** initialize dataloaders ***************#
     if dataset_name == "USC":
         if config["dataset_args"]["fake"] == True:
@@ -294,6 +293,7 @@ def main(args):
         return
 
     if config["dataset_args"]["fake"] == True:
+        print("*********** Training with augmented data ***********")
         input_loader = [fakeloader, trnloader, val_tune_loader, val_mix_loader]
     open_acc = train.train_entry(config, input_loader, text_single,
                                                    model, optimizer, lr_scheduler, device)
@@ -303,7 +303,7 @@ def main(args):
 
 if __name__ == "__main__":
     parser = ArgumentParser()
-    parser.add_argument('--config_choose', type=str, default='mmwave',
+    parser.add_argument('--config_choose', type=str, default='USC',
                         choices=['USC', 'wifi', 'mmwave', 'pamap'])
     parser.add_argument('--back_up_path', type=str, default=None)
     # parser.add_argument('--test_on', type=bool, default=False)

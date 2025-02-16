@@ -165,7 +165,6 @@ class general_meta_build:
 
 
         ###########################################################################################
-        # TODO: mmwave: adding dataset father path in the meta
         train_meta = {"type": "train", "samples": 0, "label_text_dict": seen_text_label_dict, "data_list": []}
         val_tune_meta = {"type": "val_tune", "samples": 0, "label_text_dict": seen_text_label_dict, "data_list": []}
         val_seen_meta = {"type": "val_seen", "samples": 0, "label_text_dict": seen_text_label_dict, "data_list": []}
