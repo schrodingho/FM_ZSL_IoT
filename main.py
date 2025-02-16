@@ -40,6 +40,11 @@ def main(args):
     if args.local_model_path is not None:
         config["args"]["local_model_path"] = args.local_model_path
 
+    if args.fake:
+        config["dataset_args"]["fake"] = True
+        if args.back_up_path is None:
+            raise ValueError("Please provide the path (back_up_path from log that contains the generated fake data) for the fake dataset")
+
     use_back_up = config["dataset_args"]["backup"]
     dataset_name = config["dataset_args"]["dataset"]
     config["args"]["save"] = True
@@ -49,7 +54,7 @@ def main(args):
     current_log = new_log_dir + "logdir_" + current_time
     if not os.path.exists(current_log):
         os.makedirs(current_log)
-    # TODO: ?
+
     config["model_path"] = current_log
 
     # meta_data generation
@@ -182,7 +187,6 @@ def main(args):
     logging.info("seen_set: {}".format(list(train_meta["label_text_dict"].keys())))
     logging.info("val_seen_set: {}".format(list(val_unseen_meta["label_text_dict"].keys())))
 
-    # TODO: solving data loading problems (from different folder)
     # *************** initialize dataloaders ***************#
     if dataset_name == "USC":
         if config["dataset_args"]["fake"] == True:
@@ -289,6 +293,7 @@ def main(args):
         return
 
     if config["dataset_args"]["fake"] == True:
+        print("*********** Training with augmented data ***********")
         input_loader = [fakeloader, trnloader, val_tune_loader, val_mix_loader]
     open_acc = train.train_entry(config, input_loader, text_single,
                                                    model, optimizer, lr_scheduler, device)
@@ -304,6 +309,7 @@ if __name__ == "__main__":
     # parser.add_argument('--test_on', type=bool, default=False)
     parser.add_argument('--test_model_path', type=str, default=None)
     parser.add_argument('--local_model_path', type=str, default=None)
+    parser.add_argument('--fake', type=bool, default=False)
 
     args = parser.parse_args()
     main(args)

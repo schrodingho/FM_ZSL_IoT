@@ -17,7 +17,7 @@ def load_act_label_ut_har():
 
     return act_idx_word_dict
 
-def UT_HAR_dataset(dataset_dir="/home/dingding/WiFiProject/WiFi-CSI-Sensing-Benchmark/Data/UT_HAR", WINDOW_SIZE=50, OVERLAP_RATE=0.1):
+def UT_HAR_dataset(dataset_dir="/your_path", WINDOW_SIZE=50, OVERLAP_RATE=0.1):
     data_list = glob.glob(dataset_dir+'/data/*.csv')
     label_list = glob.glob(dataset_dir+'/label/*.csv')
     all_x = []

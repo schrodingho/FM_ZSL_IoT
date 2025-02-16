@@ -24,9 +24,6 @@ class CLIPrompt(torch.nn.Module):
         self.prefix = config["args"]["prefix"]
         self.postfix = config["args"]["postfix"]
 
-        # self.all_actionlist, self.all_actiondict, self.all_actiontoken, _, _, _, _, _, _ = text_all
-        # _, _, _, self.seen_actionlist, self.seen_actiondict, self.seen_actiontoken, _, _, _ = text_all
-        # _, _, _, _, _, _, self.unseen_actionlist, self.unseen_actiondict, self.unseen_actiontoken = text_all
         self.all_actionlist, self.all_actiondict, self.all_actiontoken = text_all
         self.actionlist = self.all_actionlist
         self.actiondict = self.all_actiondict
@@ -213,10 +210,6 @@ class VisionTransformer(nn.Module):
         '''
         x = self.patch_conv(x)  # [batch, embedding_dim, patch_num, modal_leng]
         x = self.position_embedding + x.permute(0, 3, 2, 1)  # [batch, modal_leng, patch_num, embedding_dim]
-        #    [batch, modal_leng, patch_num, input_dim]
-        # -> [batch, modal_leng, patch_num/2, input_dim]
-        # -> [batch, modal_leng, patch_num/4, input_dim]
-        # -> [batch, modal_leng, patch_num/8, input_dim]
         x = self.msa_layer(x)
         x = nn.Flatten()(x)
         x = self.dense_tower(x)

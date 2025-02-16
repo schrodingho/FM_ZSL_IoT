@@ -15,7 +15,7 @@ Deep learning models are increasingly deployed on edge Internet of Things (IoT) 
 - [PAMAP2](https://archive.ics.uci.edu/dataset/231/pamap2+physical+activity+monitoring): Get the path of the subdirectory `Protocol` of PAMAP2 dataset, change the `dataset_path` in `./settings/pamap.yaml` as your own `Protocol` path.
 - [MM-Fi](https://ntu-aiot-lab.github.io/mm-fi)
   - [mmWave](https://drive.google.com/file/d/1KxPaB2amj0mQkjhrx_1yfPQ0_s2H58tx/view?usp=drive_link): We use the official `filtered_mmwave` for training and testing. Change the `dataset_path` in `./settings/mmwave.yaml` as your `filtered_mmwave` directory path.
-  - Wi-Fi: `TBD`
+  - [Wi-Fi](https://github.com/ybhbingo/MMFi_dataset): We use the official Wi-Fi dataset from MM-Fi. The [E04](https://drive.google.com/file/d/1-XTwxO0ymJ1AtI5HsOOjD-XTrIHKPaA1/view?usp=drive_link) is selected for training and testing. Change the `dataset_path` in `./settings/wifi.yaml` as your Wi-Fi dataset directory path.
 ### Training
 - quick train
 ```python
@@ -40,15 +40,24 @@ python main_sup.py --config_choose <dataset_config> --back_up_path <path_to_save
 # Inference local + foundation model
 python main.py --config_choose <dataset_config> --back_up_path <path_to_saved_log_or_data> --test_model_path <path_to_saved_fm_model> --local_model_path <path_to_saved_local_model>
 ```
-### TBD
-- full and detailed documentation
-  - Wi-Fi data preparation
-  - configuration guide
-- code clean and reorganization
-- data augmentation guide
+
+- data augmentation
+```python
+# Generate augmented data (a trained model with its log is requried)
+cd ./extension/data_aug
+# change the `saved_log_path` in `run_gen_fake_train.sh` as the path to the saved log
+# run the script
+bash run_gen_fake_train.sh
+```
+
+```python
+# train with augmented data
+python main.py --config_choose <dataset_config> --back_up_path <path_to_saved_log_or_data> --fake True
+```
 
 ## Thanks
 - [CLIP](https://github.com/openai/CLIP)
 - [Efficient-Prompt](https://github.com/ju-chen/Efficient-Prompt)
 - [SupContrast](https://github.com/HobbitLong/SupContrast)
 - [HAR-Dataset-Preprocess](https://github.com/xushige/HAR-Dataset-Preprocess)
+- [f-clswgan-pytorch](https://github.com/mkara44/f-clswgan_pytorch)

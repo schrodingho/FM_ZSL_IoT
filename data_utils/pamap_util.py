@@ -221,9 +221,7 @@ def gen_PAMAP_data2(dataset_dir, window_size, step):
 
 
 if __name__ == '__main__':
-    # PAMAP(dataset_dir="/home/dingding/Datasets/PAMAP2_Dataset/Protocol")
-    # gen_PAMAP_data(dataset_dir="/home/dinghao/Dataset/PAMAP2_Dataset/Protocol/")
-    dataset_dir = "/home/dingding/Datasets/PAMAP2_Dataset/Protocol"
+    dataset_dir = "/your_path"
     # x, y = gen_PAMAP_data2(dataset_dir, 171, 85)
     # x = np.array(x)
     # y = np.array(y)

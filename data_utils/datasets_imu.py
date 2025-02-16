@@ -425,8 +425,7 @@ class general_meta_build:
     def genTextList(self, text_label_dict, type="train"):
         if not self.mapping_opt:
             raise ValueError("mapping_opt is None")
-        # TODO: automatically mkdir
-        # TODO: the generation can be incorrect
+
         textlist_father_dir = self.log_dir
         if not os.path.exists(textlist_father_dir):
             os.mkdir(textlist_father_dir)
@@ -449,4 +448,4 @@ class general_meta_build:
 
 if __name__ == '__main__':
     # tmp1()
-    utd_dataset_path = "/home/dingding/Datasets/Inertial"
+    utd_dataset_path = "/your_path"

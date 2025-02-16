@@ -17,10 +17,9 @@ args:
   start_iter: 0
   numContrast: 400
   val_epoch: 0
-
 dataset_args:
   dataset: "mmwave"
-  dataset_path: "/home/dinghao/Dataset/filtered_mmwave"
+  dataset_path: "/your_path/filtered_mmwave/E04"
   type: "mmwave"
   raw_structure: False
   select_env: ["E04"]

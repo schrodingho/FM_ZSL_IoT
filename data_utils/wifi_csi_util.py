@@ -22,7 +22,7 @@ def load_act_label():
 
     return act_idx_desp_dict
 
-def gen_wifi(dataset_dir='/home/dingding/Datasets/mmfi_wifi/E04', WINDOW_SIZE=1024, OVERLAP_RATE=0.1):
+def gen_wifi(dataset_dir='/your_path', WINDOW_SIZE=1024, OVERLAP_RATE=0.1):
 
     all_x = []
     all_y = []
@@ -73,7 +73,7 @@ def gen_wifi(dataset_dir='/home/dingding/Datasets/mmfi_wifi/E04', WINDOW_SIZE=10
     np.save('./data_cache/wifi_data.npy', all_x)
     np.save('./data_cache/wifi_label.npy', all_y)
 
-def gen_wifi2(dataset_dir='/home/dingding/Datasets/mmfi_wifi/E04', WINDOW_SIZE=1024, OVERLAP_RATE=0.1):
+def gen_wifi2(dataset_dir='/your_path', WINDOW_SIZE=1024, OVERLAP_RATE=0.1):
     all_x = []
     all_y = []
     length = []
@@ -155,16 +155,12 @@ def select_pca(csi_data, num_subcarriers=40):
 
 
 def select_important_subcarriers_2(csi_data, num_subcarriers=20):
-    # 计算每个子载波上的能量
     energy = np.sum(np.abs(csi_data) ** 2, axis=1)
 
-    # 计算每个子载波上的方差
     # variance = np.var(csi_data, axis=1)
 
-    # 综合考虑能量和方差，计算每个子载波的重要性得分
     importance_score = energy
 
-    # 选择重要性得分最高的20个子载波
     important_subcarriers_idx = np.argsort(importance_score, axis=None)[-num_subcarriers:]
 
     return important_subcarriers_idx

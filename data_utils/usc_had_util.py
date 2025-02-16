@@ -5,17 +5,14 @@ from data_utils.base import z_score_standard_single
 import dill
 
 def window(data, size, stride):
-    '''将数组data按照滑窗尺寸size和stride进行切割'''
     x = []
     for i in range(0, data.shape[0], stride):
-        if i+size <= data.shape[0]: #不足一个滑窗大小的数据丢
+        if i+size <= data.shape[0]:
                 x.append(data[i: i + size])
     return x
 
 def merge(path, size, stride):
-    '''合并数据
-    path: USC-HAD路径'''
-    result = [[] for i in range(12)]    #result的索引就是对应的动作标签
+    result = [[] for i in range(12)]
 
     # list all folders
     subject_list = os.listdir(path)

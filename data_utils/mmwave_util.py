@@ -19,7 +19,7 @@ def load_act_label():
         act_idx_desp_dict[action_id] = desp
 
     return act_idx_desp_dict
-def gen_mmwave(dataset_dir='/home/dingding/Datasets/filtered_mmwave/data/E04', WINDOW_SIZE=100, OVERLAP_RATE=0.1):
+def gen_mmwave(dataset_dir='/your_path', WINDOW_SIZE=100, OVERLAP_RATE=0.1):
 
     all_x = []
     all_y = []

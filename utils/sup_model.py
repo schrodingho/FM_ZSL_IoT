@@ -104,10 +104,6 @@ class VisionTransformer(nn.Module):
         '''
         x = self.patch_conv(x)  # [batch, embedding_dim, patch_num, modal_leng]
         x = self.position_embedding + x.permute(0, 3, 2, 1)  # [batch, modal_leng, patch_num, embedding_dim]
-        #    [batch, modal_leng, patch_num, input_dim]
-        # -> [batch, modal_leng, patch_num/2, input_dim]
-        # -> [batch, modal_leng, patch_num/4, input_dim]
-        # -> [batch, modal_leng, patch_num/8, input_dim]
         x = self.msa_layer(x)
         x = nn.Flatten()(x)
         x = self.dense_tower(x)

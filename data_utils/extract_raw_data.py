@@ -110,7 +110,7 @@ def read_text_file(seen_file_path, unseen_file_path):
 
 
 if __name__ == '__main__':
-    meta_path = "/home/dingding/PycharmProjects/Efficient-Prompt/logs_USC/logdir_20240408-115741"
+    meta_path = "/your_path"
 
     config = {
         "dataset_args": {

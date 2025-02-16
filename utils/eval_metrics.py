@@ -4,7 +4,6 @@ from utils.open_set import os_detect_knn, os_detect_cluster
 from sklearn.metrics import confusion_matrix, precision_recall_fscore_support
 from tqdm import tqdm
 
-# TODO: fix the evaluation metrics (show essential results)
 def model_eval_metrics(config, epoch, trn_vFeatures, val_vFeatures, pos_tFeatures, neg_tFeatures, vis_type_lists, trn_targets, val_targets, auto_knn_params=None):
     logging.info(f"#####################################################\n"
                  f"Epoch: {epoch}")
@@ -345,7 +344,6 @@ def special_model_eval_metrics(special_model, val_mix_loader, config, epoch, trn
 
     correct_hit_seen_vFeature = val_vFeatures[correct_hit_seen_idx]
     correct_hit_unseen_vFeature = val_vFeatures[correct_hit_unseen_idx]
-    # TODO: fix bug
 
     # selected_seen_raw_data = raw_data_lists[correct_hit_seen_idx]
     special_model.eval()
@@ -374,23 +372,15 @@ def special_model_eval_metrics(special_model, val_mix_loader, config, epoch, trn
     seen_sim = seen_logits.softmax(dim=-1)
     unseen_sim = unseen_logits.softmax(dim=-1)
 
-    # incorrect_unseen_sim = incorrect_unseen_logits.softmax(dim=-1)
-
     seen_max_idx = seen_sim.argmax(dim=-1)
     unseen_max_idx = unseen_sim.argmax(dim=-1)
-
-    # incorrect_seen_in_unseen_target = incorrect_unseen_sim.argmax(dim=-1)
-
-    # essential results: zsl classification results
-    # zsl_seen_hits_idx = seen_max_idx == correct_hit_seen_targets
-    # zsl_unseen_hits_idx = unseen_max_idx == correct_hit_unseen_targets
 
     ##################### new evaluation metrics ######################
     # zsl_unseen_hits_target = unseen_max_idx[zsl_unseen_hits_idx]
     # incorrect_seen_to_unseen_max_idx: incorrect_unseen_max_idx
     val_unseen_targets = val_targets[unseen_idx]
     val_seen_targets = val_targets[seen_idx]
-    # TODO: correct_hit_unseen_targets existing potential problems (seen also contain 0 -> 2 label)
+
     per_class_acc_unseen = per_class_acc_calc(unseen_max_idx, correct_hit_unseen_targets, val_unseen_targets, unique_unseen_classes)
     per_class_acc_seen = per_class_acc_calc(seen_max_idx, correct_hit_seen_targets, val_seen_targets, unique_seen_classes)
 
@@ -399,60 +389,9 @@ def special_model_eval_metrics(special_model, val_mix_loader, config, epoch, trn
     harmonic_mean = 2 * per_class_acc_seen * per_class_acc_unseen / (per_class_acc_seen + per_class_acc_unseen)
     harmonic_mean_special = 2 * per_class_speical_seen * per_class_acc_unseen / (per_class_speical_seen + per_class_acc_unseen)
 
-    # val_unseen_target_dict, unique_targets = target_cnt(val_unseen_targets)
-    # zsl_unseen_hits_target_dict, _ = target_cnt(zsl_unseen_hits_target, other=True, unique_targets=unique_targets)
-    # incorrect_seen_in_unseen_target_dict, _ = target_cnt(incorrect_seen_in_unseen_target, other=True, unique_targets=unique_targets)
-    # unseen_pred_dict, _ = target_cnt(unseen_max_idx, other=True, unique_targets=unique_targets)
-
-    #### TODO: confusion matrix
-    #### evaluation metrics
-    # avg_recall, avg_precision, avg_f1 = avg_metrics(val_unseen_target_dict, zsl_unseen_hits_target_dict, unseen_pred_dict, incorrect_seen_in_unseen_target_dict)
-
-    # metric 1:
     seen_hits_rate = correct_hit_seen_idx.sum() / seen_idx.sum()
     unseen_hits_rate = correct_hit_unseen_idx.sum() / unseen_idx.sum()
     open_set_acc = (seen_hits_rate + unseen_hits_rate) / 2
-
-    # print(f"[Seen] correct_seen_hits / all_seen: {seen_hits_rate}\n"
-    #       f"[Unseen] correct_unseen_hits / all_unseen: {unseen_hits_rate}\n")
-    # print(f"Open Set Acc: {(seen_hits_rate + unseen_hits_rate) / 2}")
-    # logging.info(f"[Seen] correct_seen_hits / all_seen: {seen_hits_rate}\n"
-    #              f"[Unseen] correct_unseen_hits / all_unseen: {unseen_hits_rate}\n"
-    #              f"Open Set Acc: {(seen_hits_rate + unseen_hits_rate) / 2}")
-
-
-    # metric 2:
-    # zsl_seen_hits_div_correct_seen = zsl_seen_hits_idx.sum() / len(correct_hit_seen_targets)
-    # zsl_unseen_hits_div_correct_unseen = zsl_unseen_hits_idx.sum() / len(correct_hit_unseen_targets)
-    # print(f"[Seen] seen_zsl_hits / correct_seen_hits: {zsl_seen_hits_div_correct_seen}\n"
-    #       f"[Unseen] unseen_zsl_hits / correct_unseen_hits: {zsl_unseen_hits_div_correct_unseen}")
-    #
-    # logging.info(f"[Seen] seen_zsl_hits / correct_seen_hits: {zsl_seen_hits_div_correct_seen}\n"
-    #                 f"[Unseen] unseen_zsl_hits / correct_unseen_hits: {zsl_unseen_hits_div_correct_unseen}")
-
-
-    # metric 3:
-    # zsl_seen_hits_div_select_seen = zsl_seen_hits_idx.sum() / select_seen_idx.sum()
-    # zsl_unseen_hits_div_select_unseen = zsl_unseen_hits_idx.sum() / select_unseen_idx.sum()
-
-    # print(f"[Seen] ZSL_seen_hits / select_seen: {zsl_seen_hits_div_select_seen}\n"
-    #       f"[Unseen] ZSL_unseen_hits / select_unseen: {zsl_unseen_hits_div_select_unseen}")
-    #
-    # logging.info(f"[Seen] ZSL_seen_hits / select_seen: {zsl_seen_hits_div_select_seen}\n"
-    #                 f"[Unseen] ZSL_unseen_hits / select_unseen: {zsl_unseen_hits_div_select_unseen}")
-
-    # metric 4:
-    # zsl_seen_hits_div_seen_idx = zsl_seen_hits_idx.sum() / seen_idx.sum()
-    # zsl_unseen_hits_div_unseen_idx = zsl_unseen_hits_idx.sum() / unseen_idx.sum()
-
-    # print(f"[Seen] ZSL_seen_hits / all_seen: {zsl_seen_hits_div_seen_idx}\n"
-    #       f"[Unseen] ZSL_unseen_hits / all_unseen: {zsl_unseen_hits_div_unseen_idx}")
-
-    # logging.info(f"[Seen] ZSL_seen_hits / all_seen: {zsl_seen_hits_div_seen_idx}\n"
-    #                 f"[Unseen] ZSL_unseen_hits / all_unseen: {zsl_unseen_hits_div_unseen_idx}")
-
-    # print(f"[Unseen] Per class acc: {per_class_acc_unseen}")
-    # logging.info(f"[Unseen] Per class acc: {per_class_acc_unseen}")
 
     print(f"[Seen] Per class acc: {per_class_acc_seen}")
     print(f"[Seen] Special model per class acc: {per_class_speical_seen}")
