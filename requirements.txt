@@ -2,7 +2,7 @@ dill==0.3.7
 ftfy==6.3.1
 numpy==2.1.2
 pandas==2.2.3
-Pillow==11.0.0
+Pillow==12.1.1
 regex==2024.9.11
 ruamel.base==1.0.0
 scikit_learn==1.5.2
